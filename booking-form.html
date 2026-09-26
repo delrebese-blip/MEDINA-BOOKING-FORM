@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<script>  (function(){
+    try{
+      var saved = localStorage.getItem('afj-theme');
+      var theme = saved || ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    }catch(e){}
+  })();</script>
+<title>Book Your Appointment — AFJ Medina Dental Clinic</title>
+<meta name="description" content="Book an appointment at AFJ Medina Dental Clinic in Moonwalk, Parañaque City. Choose your service, date and time.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+      --navy:#0B2545;
+      --navy-soft: rgba(11,37,69,.7);
+      --teal:#159A9C;
+      --teal-dark:#0E7A7C;
+      --aqua:#EAF7F7;
+      --white:#FFFFFF;
+      --slate:#52616B;
+      --shadow-sm: 0 2px 10px rgba(11,37,69,.06);
+      --shadow-md: 0 10px 30px rgba(11,37,69,.09);
+      --shadow-lg: 0 20px 60px rgba(11,37,69,.14);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --maxw: 1180px;
+    }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; overflow-x:hidden;}
+  body{
+      margin:0;
+      font-family:'Plus Jakarta Sans', sans-serif;
+      color:var(--navy);
+      background:var(--white);
+      -webkit-font-smoothing:antialiased;
+    }
+  button{font-family:inherit; cursor:pointer;}
+  h1{font-family:'Fraunces', serif; font-weight:600; margin:0; line-height:1.15; color:var(--navy);}
+  /* Buttons */
+  .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:15px 28px; border-radius:100px; font-weight:700; font-size:15px;
+      border:1.5px solid transparent; transition:transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+      white-space:nowrap;
+    }
+  .btn svg{width:18px; height:18px; flex-shrink:0;}
+  .btn-primary{background:var(--teal); color:var(--white); box-shadow:0 10px 24px rgba(21,154,156,.28);}
+  .btn-primary:hover{background:var(--teal-dark); transform:translateY(-2px); box-shadow:0 14px 28px rgba(21,154,156,.34);}
+  .lang-switch{
+      display:flex; align-items:center; gap:2px;
+      background:var(--aqua); border-radius:100px; padding:4px;
+      font-size:11.5px; font-weight:700;
+      position:relative; z-index:101;
+    }
+  .lang-switch button{
+      border:none; background:transparent; padding:6px 10px; border-radius:100px; color:var(--slate); letter-spacing:.02em; white-space:nowrap;
+      transition:background .2s ease, color .2s ease;
+      min-height:36px; min-width:44px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+      cursor:pointer;
+      position:relative; z-index:1;
+    }
+  .lang-switch button.active{background:var(--navy); color:var(--white);}
+  /* ===== CALL BOOKING MODAL ===== */
+  .booking-modal{
+      position:fixed; inset:0; z-index:1000;
+      align-items:center; justify-content:center; padding:24px;
+      display:flex; opacity:0; visibility:hidden;
+      transition:opacity .25s ease, visibility 0s linear .25s;
+    }
+  .booking-modal.open{opacity:1; visibility:visible; transition:opacity .25s ease, visibility 0s linear 0s;}
+  .booking-modal-panel{
+      position:relative; background:var(--white); border-radius:var(--radius);
+      box-shadow:var(--shadow-lg); max-width:440px; width:100%; max-height:88vh; overflow-y:auto;
+      opacity:0; transform:scale(.94) translateY(10px); padding:30px 26px 26px;
+      transition:opacity .28s cubic-bezier(.22,1,.36,1), transform .28s cubic-bezier(.22,1,.36,1);
+    }
+  .booking-modal.open .booking-modal-panel{opacity:1; transform:scale(1) translateY(0);}
+  .booking-modal-icon{
+      width:52px; height:52px; border-radius:50%; background:var(--aqua);
+      display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+    }
+  .booking-modal-icon svg{width:24px; height:24px; color:var(--teal-dark);}
+  .booking-modal-panel h1{font-size:21px;}
+  .booking-sub{margin-top:8px; font-size:14px; color:var(--slate); line-height:1.6;}
+  .booking-form{margin-top:22px; display:flex; flex-direction:column; gap:14px;}
+  .booking-form label{font-size:12px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; display:block;}
+  .booking-form input[type="text"], .booking-form input[type="email"], .booking-form input[type="tel"], .booking-form input[type="number"]{
+      width:100%; box-sizing:border-box; border:1.5px solid rgba(11,37,69,.14); border-radius:100px;
+      padding:11px 16px; font-size:14px; font-family:inherit; outline:none; background:var(--white); color:var(--navy);
+    }
+  .booking-form input:focus{border-color:var(--teal);}
+  .booking-services{display:flex; flex-direction:column; gap:2px; max-height:150px; overflow-y:auto; border:1.5px solid rgba(11,37,69,.1); border-radius:var(--radius-sm); padding:8px 10px;}
+  #bk-other-input{margin-top:8px;}
+  .booking-error{color:#C0392B; font-size:12.5px; display:none;}
+  .booking-submit{
+      width:100%; background:var(--teal); border:none; color:var(--white); border-radius:100px;
+      padding:14px; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+  .booking-submit:hover{background:var(--teal-dark);}
+  .booking-submit:disabled{opacity:.7; cursor:default;}
+  .booking-submit svg{width:17px; height:17px;}
+  .booking-thankyou{margin-top:22px; font-size:14.5px; color:var(--slate); line-height:1.7; text-align:center;}
+  /* ===== BOOKING REVIEW PANEL ===== */
+  .booking-review{display:none; flex-direction:column; gap:0; margin-top:22px;}
+  .booking-review-header{
+      display:flex; align-items:center; gap:10px; margin-bottom:18px;
+    }
+  .booking-review-header-icon{
+      width:36px; height:36px; border-radius:50%; background:var(--aqua);
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+  .booking-review-header-icon svg{width:17px; height:17px; color:var(--teal-dark);}
+  .booking-review-header-text strong{display:block; font-size:15px; color:var(--navy); font-weight:700;}
+  .booking-review-header-text span{font-size:12.5px; color:var(--slate);}
+  .booking-review-card{
+      background:var(--aqua); border-radius:var(--radius-sm);
+      padding:0; overflow:hidden;
+      border:1.5px solid rgba(21,154,156,.14);
+    }
+  .booking-review-section{
+      padding:14px 18px;
+      border-bottom:1px solid rgba(21,154,156,.12);
+    }
+  .booking-review-section:last-child{border-bottom:none;}
+  .booking-review-section-label{
+      font-size:10.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      color:var(--teal-dark); margin-bottom:8px; display:flex; align-items:center; gap:6px;
+    }
+  .booking-review-section-label svg{width:12px; height:12px;}
+  .booking-review-row{
+      display:flex; justify-content:space-between; align-items:baseline;
+      gap:12px; margin-bottom:4px;
+    }
+  .booking-review-row:last-child{margin-bottom:0;}
+  .booking-review-key{font-size:12.5px; color:var(--slate); flex-shrink:0;}
+  .booking-review-val{font-size:13px; font-weight:600; color:var(--navy); text-align:right; word-break:break-word;}
+  .booking-review-appt{
+      background:var(--navy); border-radius:var(--radius-sm);
+      padding:16px 18px; margin-top:12px;
+      display:flex; align-items:center; gap:14px;
+    }
+  .booking-review-appt-icon{
+      width:40px; height:40px; border-radius:50%; background:rgba(21,154,156,.22);
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+  .booking-review-appt-icon svg{width:19px; height:19px; color:#4fe0e0;}
+  .booking-review-appt-text{}
+  .booking-review-appt-date{font-size:15px; font-weight:700; color:#fff; line-height:1.3;}
+  .booking-review-appt-time{font-size:13px; color:rgba(255,255,255,.65); margin-top:3px;}
+  .booking-review-notice{
+      margin-top:12px; padding:11px 14px;
+      background:rgba(21,154,156,.08); border-radius:var(--radius-sm);
+      border-left:3px solid var(--teal);
+      font-size:12px; color:var(--slate); line-height:1.6;
+    }
+  .booking-review-notice strong{color:var(--teal-dark);}
+  .booking-review-actions{
+      display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;
+    }
+  .booking-review-actions .btn{flex:1; min-width:120px; font-size:14px; padding:13px 18px;}
+  .booking-review-edit{
+      background:var(--aqua); color:var(--navy); border:1.5px solid rgba(11,37,69,.14);
+      display:flex; align-items:center; gap:8px;
+    }
+  .booking-review-edit:hover{border-color:var(--navy); transform:translateY(-1px);}
+  .booking-review-edit svg{width:15px; height:15px;}
+  html[data-theme="dark"] .booking-review-card{background:rgba(255,255,255,.05); border-color:rgba(21,154,156,.22);}
+  html[data-theme="dark"] .booking-review-section{border-color:rgba(255,255,255,.08);}
+  html[data-theme="dark"] .booking-review-key{color:rgba(255,255,255,.5);}
+  html[data-theme="dark"] .booking-review-val{color:#e8edf2;}
+  html[data-theme="dark"] .booking-review-section-label{color:#4fe0e0;}
+  html[data-theme="dark"] .booking-review-header-text strong{color:#e8edf2;}
+  html[data-theme="dark"] .booking-review-header-text span{color:rgba(255,255,255,.5);}
+  html[data-theme="dark"] .booking-review-header-icon{background:rgba(21,154,156,.18);}
+  html[data-theme="dark"] .booking-review-edit{background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.14); color:#e8edf2;}
+  html[data-theme="dark"] .booking-review-notice{background:rgba(21,154,156,.12); color:rgba(255,255,255,.65);}
+  html[data-theme="dark"] .booking-review-notice strong{color:#4fe0e0;}
+  html[data-theme="dark"] .booking-review-appt{background:rgba(21,154,156,.15); border:1px solid rgba(21,154,156,.3);}
+  html[data-theme="dark"] .booking-review-appt-date{color:#fff;}
+  html[data-theme="dark"] .booking-review-appt-time{color:rgba(255,255,255,.6);}
+  html[data-theme="dark"] #bkReviewServices{color:#e8edf2;}
+  html[data-theme="dark"] #bkReviewMessage{color:rgba(255,255,255,.6);}
+  @media (max-width:600px){
+    .booking-modal{padding:16px;}
+    .booking-modal-panel{max-width:400px; padding:26px 20px 22px;}
+  }
+  /* ===== APPOINTMENT SCHEDULING FIELDS ===== */
+  .booking-form select, .booking-form textarea, .booking-form .date-field-trigger{
+      width:100%; box-sizing:border-box; border:1.5px solid rgba(11,37,69,.14); border-radius:var(--radius-sm);
+      padding:11px 16px; font-size:16px; font-family:inherit; outline:none; background:var(--white); color:var(--navy); appearance:none;
+      min-height:48px; -webkit-tap-highlight-color:transparent;
+    }
+  .booking-form select:focus, .booking-form textarea:focus, .booking-form .date-field-trigger:focus-visible{border-color:var(--teal);}
+  .booking-form select:disabled{opacity:.55; cursor:not-allowed;}
+  .booking-form textarea{resize:vertical; min-height:64px;}
+  .booking-slot-hint{font-size:12px; color:var(--slate); margin-top:6px; display:block;}
+  .booking-slot-hint.warn{color:#C0392B; font-weight:600;}
+  .booking-slot-hint .bk-hint-retry{background:none; border:none; padding:0; margin:0; font:inherit; color:inherit; text-decoration:underline; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  /* ===== CUSTOM DATE PICKER (replaces the native input[type="date"] popup) =====
+       Everything about its size is driven by --cal-day: raise or lower that one
+       variable (and the popup adapts) to make the whole calendar bigger/smaller. */
+  .date-field{
+      --cal-day:40px; --cal-gap:4px; --cal-radius:18px;
+      --cal-bg:#1C1E22; --cal-border:rgba(255,255,255,.08);
+      --cal-text:#F5F6F7; --cal-text-dim:rgba(245,246,247,.32); --cal-text-muted:rgba(245,246,247,.6);
+      --cal-accent:var(--teal); --cal-accent-text:#0B2545; --cal-today-ring:rgba(21,154,156,.65);
+      position:relative;
+    }
+  .date-field-trigger{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight:600; color:var(--navy); text-align:left; cursor:pointer;
+      transition:border-color .18s ease;
+    }
+  .date-field-trigger:hover{border-color:rgba(11,37,69,.28);}
+  .date-field.open .date-field-trigger{border-color:var(--teal);}
+  .date-field-trigger .date-field-placeholder{color:var(--slate); font-weight:500;}
+  .date-field-trigger svg{width:19px; height:19px; flex-shrink:0; color:var(--teal-dark); opacity:.85;}
+  .date-calendar-popup{
+      margin-top:10px; width:100%; box-sizing:border-box;
+      background:var(--cal-bg); border-radius:var(--cal-radius); padding:16px 14px 14px;
+      box-shadow:0 16px 38px rgba(11,37,69,.24), 0 0 0 1px var(--cal-border);
+    }
+  .date-calendar-popup[hidden]{display:none;}
+  .date-calendar-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding:0 2px;}
+  .date-calendar-month{font-family:'Fraunces', serif; font-weight:600; font-size:18px; color:var(--cal-text);}
+  .date-calendar-nav{display:flex; align-items:center; gap:12px;}
+  .date-calendar-nav-btn{
+      width:26px; height:26px; border:none; border-radius:50%; background:transparent; color:var(--cal-text-muted);
+      display:flex; align-items:center; justify-content:center; font-size:17px; line-height:1; padding:0;
+      cursor:pointer; transition:background .15s ease, color .15s ease; -webkit-tap-highlight-color:transparent;
+    }
+  .date-calendar-nav-btn:hover{background:rgba(255,255,255,.1); color:var(--cal-text);}
+  .date-calendar-nav-btn:disabled{opacity:.2; cursor:default; pointer-events:none;}
+  .date-calendar-today-dot{
+      width:7px; height:7px; padding:0; border:none; border-radius:50%; background:var(--cal-accent);
+      cursor:pointer; flex-shrink:0; -webkit-tap-highlight-color:transparent;
+    }
+  .date-calendar-weekdays, .date-calendar-grid{display:grid; grid-template-columns:repeat(7, var(--cal-day)); gap:var(--cal-gap); justify-content:space-between;}
+  .date-calendar-weekdays{margin-bottom:6px;}
+  .date-calendar-weekdays span{
+      display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700;
+      color:var(--cal-text-muted);
+    }
+  .date-calendar-day{
+      width:var(--cal-day); height:var(--cal-day); border:none; border-radius:12px; background:transparent;
+      color:var(--cal-text); font-size:15px; font-weight:600; font-family:inherit; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent;
+      transition:background .15s ease, color .15s ease;
+    }
+  .date-calendar-day:hover:not(:disabled):not(.is-selected){background:rgba(255,255,255,.1);}
+  .date-calendar-day.is-outside, .date-calendar-day.is-past, .date-calendar-day:disabled{color:var(--cal-text-dim); font-weight:500;}
+  .date-calendar-day:disabled{cursor:default;}
+  .date-calendar-day.is-today{box-shadow:inset 0 0 0 1.5px var(--cal-today-ring);}
+  .date-calendar-day.is-selected{background:var(--cal-accent); color:var(--cal-accent-text); box-shadow:none;}
+  /* Day the dentist can't take: soft red tint, struck through, not clickable, never highlighted */
+  .date-calendar-day.is-unavailable{color:rgba(242,139,128,.86); background:rgba(224,90,78,.12);
+      box-shadow:inset 0 0 0 1px rgba(224,90,78,.3); font-weight:500; text-decoration:line-through;
+      text-decoration-thickness:1px; cursor:not-allowed;}
+  /* Small key under the calendar so the tinted days are self-explanatory */
+  .date-calendar-legend{display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-top:12px; padding:11px 4px 0; border-top:1px solid var(--cal-border);
+      font-size:12px; line-height:1.3; color:var(--cal-text-muted);}
+  .date-calendar-legend-item{display:inline-flex; align-items:center; gap:8px;}
+  .date-calendar-legend-swatch{position:relative; width:16px; height:16px; border-radius:5px; flex-shrink:0;
+      background:rgba(224,90,78,.12); box-shadow:inset 0 0 0 1px rgba(224,90,78,.45);}
+  .date-calendar-legend-swatch::after{content:""; position:absolute; left:3px; right:3px; top:50%; height:1px;
+      background:rgba(242,139,128,.9); transform:rotate(-35deg);}
+  .date-calendar-legend-status{opacity:0; transition:opacity .2s ease;}
+  .date-calendar-legend.is-checking .date-calendar-legend-status{opacity:1;}
+  @media (max-width:380px){
+    .date-field{--cal-day:34px; --cal-gap:2px;}
+    .date-calendar-popup{padding:14px 8px 10px;}
+  }
+  /* #bk-time stays in the DOM as the real form value (kept in sync with the
+       tap grid below) but the grid is what people actually see and tap. */
+  #bk-time{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+  .time-slot-grid{
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(88px,1fr)); gap:8px;
+      padding:2px;
+    }
+  .time-slot-grid:empty{display:none;}
+  .time-slot-grid.has-selection .time-slot-btn:not(.selected){display:none;}
+  .time-slot-btn{
+      min-height:44px; display:flex; align-items:center; justify-content:center;
+      border:1.5px solid rgba(11,37,69,.16); border-radius:var(--radius-sm); background:var(--white);
+      color:var(--navy); font-size:13.5px; font-weight:700; font-family:inherit; cursor:pointer;
+      padding:10px 6px; transition:border-color .15s ease, background .15s ease, color .15s ease, transform .1s ease;
+      -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+    }
+  .time-slot-btn:hover{border-color:var(--teal);}
+  .time-slot-btn:active{transform:scale(.96);}
+  .time-slot-btn.selected{background:var(--teal); border-color:var(--teal); color:var(--white);}
+  .time-slot-btn:disabled{opacity:.4; cursor:not-allowed; text-decoration:line-through; background:rgba(11,37,69,.04);}
+  .time-slot-grid-msg{grid-column:1/-1; font-size:13px; color:var(--slate); text-align:center; padding:14px 0;}
+  @media(max-width:420px){
+    .time-slot-grid{grid-template-columns:repeat(auto-fill, minmax(76px,1fr)); gap:6px;}
+    .time-slot-btn{font-size:13px; padding:10px 4px;}
+  }
+  @media (max-width:480px){
+    .lang-switch{font-size:10.5px; gap:1px;}
+    .lang-switch button{padding:5px 8px;}
+  }
+  .cw-checkbox-item{display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--navy); padding:6px 4px; cursor:pointer; font-weight:500;}
+  .cw-checkbox-item input[type="checkbox"]{accent-color:var(--teal); width:16px; height:16px; cursor:pointer; flex-shrink:0;}
+  /* ============================================================
+       ===== DARK MODE (kept separate from the rules above so
+       the light-mode design is untouched; only additive overrides) =====
+       ============================================================ */
+  html[data-theme="dark"]{ color-scheme:dark; }
+  /* Global */
+  html[data-theme="dark"] body{background:#0D1520; color:#EAF1F8;}
+  html[data-theme="dark"] h1{color:#F3F7FB;}
+  html[data-theme="dark"] .lang-switch{background:#16222C;}
+  html[data-theme="dark"] .lang-switch button{color:#9FB0C2;}
+  html[data-theme="dark"] .booking-modal-panel{background:#17202B;}
+  html[data-theme="dark"] .booking-modal-icon{background:#101B22;}
+  html[data-theme="dark"] .booking-sub{color:#9FB0C2;}
+  html[data-theme="dark"] .booking-form label{color:#F3F7FB;}
+  html[data-theme="dark"] .booking-form input{background:#17202B; color:#F3F7FB; border-color:rgba(255,255,255,.18);}
+  html[data-theme="dark"] .booking-form input::placeholder{color:#7A8CA0;}
+  html[data-theme="dark"] .booking-services{border-color:rgba(255,255,255,.14);}
+  html[data-theme="dark"] .booking-thankyou{color:#9FB0C2;}
+  html[data-theme="dark"] .booking-form select, html[data-theme="dark"] .booking-form textarea, html[data-theme="dark"] .booking-form .date-field-trigger{background:#17202B; color:#F3F7FB; border-color:rgba(255,255,255,.18);}
+  html[data-theme="dark"] .date-field-trigger .date-field-placeholder{color:#7A8CA0;}
+  html[data-theme="dark"] .date-field-trigger svg{color:var(--teal);}
+  html[data-theme="dark"] .time-slot-btn{background:#17202B; color:#F3F7FB; border-color:rgba(255,255,255,.16);}
+  html[data-theme="dark"] .time-slot-btn.selected{background:var(--teal); border-color:var(--teal); color:#0B2545;}
+  html[data-theme="dark"] .time-slot-btn:disabled{background:rgba(255,255,255,.04); color:#7A8CA0;}
+  html[data-theme="dark"] .time-slot-grid-msg{color:#9FB0C2;}
+  html[data-theme="dark"] .cw-checkbox-item{color:#F3F7FB;}
+
+  /* ===== STANDALONE PAGE: the form is the page, not a pop-up ===== */
+  body{background:var(--aqua); min-height:100vh;}
+  .bk-page{max-width:520px; margin:0 auto; padding:22px 16px 56px;}
+  .bk-topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;}
+  .bk-brand{font-family:'Fraunces', serif; font-weight:600; font-size:18px; color:var(--navy);}
+  html[data-theme="dark"] .bk-brand{color:#F3F7FB;}
+  .booking-modal{position:static; display:block; padding:0; opacity:1; visibility:visible; transition:none;}
+  .booking-modal-panel{max-width:none; max-height:none; overflow:visible; opacity:1; transform:none; transition:none;}
+</style>
+</head>
+<body>
+<main class="bk-page">
+  <div class="bk-topbar">
+    <span class="bk-brand">AFJ Medina Dental Clinic</span>
+    <div class="lang-switch" role="group" aria-label="Language switch">
+      <button type="button" class="active" data-lang="en">English</button>
+      <button type="button" data-lang="fil">Filipino</button>
+    </div>
+  </div>
+
+<!-- ===================== BOOKING FORM ===================== -->
+<div class="booking-modal open" id="bookingModal">
+  <div class="booking-modal-panel" aria-labelledby="bookingModalTitle">
+    <div class="booking-modal-icon" id="bookingModalIcon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </div>
+    <h1 id="bookingModalTitle" data-i18n="bk.title">Book Your Appointment</h1>
+    <p class="booking-sub" data-i18n="bk.sub" id="bookingModalSub">Fill this out and we'll connect your call right after.</p>
+    <form class="booking-form" id="bookingForm" novalidate>
+      <div>
+        <label for="bk-fullName" data-i18n="cw.q.fullName">Full Name</label>
+        <input type="text" id="bk-fullName" data-i18n-placeholder="cw.ph.fullName" placeholder="Type your name..." autocomplete="off">
+      </div>
+      <div>
+        <label for="bk-age" data-i18n="bk.q.age">Age</label>
+        <input type="number" id="bk-age" min="0" max="120" inputmode="numeric" data-i18n-placeholder="bk.ph.age" placeholder="Type your age..." autocomplete="off">
+      </div>
+      <div>
+        <label for="bk-phone" data-i18n="cw.q.phone">Phone Number</label>
+        <input type="tel" id="bk-phone" data-i18n-placeholder="cw.ph.phone" placeholder="Type your phone number..." autocomplete="off">
+      </div>
+      <div>
+        <label for="bk-location" data-i18n="cw.q.location">Location</label>
+        <input type="text" id="bk-location" data-i18n-placeholder="cw.ph.location" placeholder="Type your location..." autocomplete="off">
+      </div>
+      <div>
+        <label for="bk-email" data-i18n="cw.q.email">Email (optional)</label>
+        <input type="email" id="bk-email" data-i18n-placeholder="cw.ph.email" placeholder="Type your email..." autocomplete="off">
+      </div>
+      <div>
+        <label data-i18n="cw.q.services">Services Needed (select all that apply)</label>
+        <div class="booking-services" id="bk-services-list">
+          <label class="cw-checkbox-item"><input type="checkbox" value="Oral Prophylaxis (Cleaning)"> <span data-i18n="cw.svc1">Oral Prophylaxis (Cleaning)</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Tooth Restoration"> <span data-i18n="cw.svc2">Tooth Restoration</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Oral Surgery"> <span data-i18n="cw.svc3">Oral Surgery</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Orthodontic Treatment (Braces)"> <span data-i18n="cw.svc4">Orthodontic Treatment (Braces)</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Root Canal Treatment"> <span data-i18n="cw.svc5">Root Canal Treatment</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Prosthodontic Treatment"> <span data-i18n="cw.svc6">Prosthodontic Treatment</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Dentures"> <span data-i18n="cw.svc7">Dentures</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Jacket Crowns"> <span data-i18n="cw.svc8">Jacket Crowns</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" value="Fixed Bridge"> <span data-i18n="cw.svc9">Fixed Bridge</span></label>
+          <label class="cw-checkbox-item"><input type="checkbox" id="bk-other-checkbox" value="Other / Not Sure"> <span data-i18n="cw.svcOther">Other / Not Sure</span></label>
+        </div>
+        <input id="bk-other-input" type="text" data-i18n-placeholder="cw.otherPlaceholder" placeholder="Please specify the service(s) you need..." autocomplete="off" style="display:none;">
+      </div>
+      <div>
+        <label for="bkDateTrigger" data-i18n="bk.q.serviceDate">Service Date</label>
+        <div class="date-field" id="bkDateField">
+          <button type="button" class="date-field-trigger" id="bkDateTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="bkCalendarPopup">
+            <span id="bkDateTriggerText" class="date-field-placeholder" data-i18n="bk.selectDatePlaceholder">Select a date</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M8 3v4M16 3v4M3 10h18"></path></svg>
+          </button>
+          <input type="hidden" id="bk-date" name="date" autocomplete="off">
+          <div class="date-calendar-popup" id="bkCalendarPopup" hidden>
+            <div class="date-calendar-header">
+              <span class="date-calendar-month" id="bkCalMonthLabel"></span>
+              <div class="date-calendar-nav">
+                <button type="button" class="date-calendar-nav-btn" id="bkCalPrev" aria-label="Previous month">&#8249;</button>
+                <button type="button" class="date-calendar-today-dot" id="bkCalToday" aria-label="Today"></button>
+                <button type="button" class="date-calendar-nav-btn" id="bkCalNext" aria-label="Next month">&#8250;</button>
+              </div>
+            </div>
+            <div class="date-calendar-weekdays" id="bkCalWeekdays"></div>
+            <div class="date-calendar-grid" id="bkCalGrid"></div>
+            <div class="date-calendar-legend" id="bkCalLegend">
+              <span class="date-calendar-legend-item"><span class="date-calendar-legend-swatch" aria-hidden="true"></span><span data-i18n="bk.unavailable">Unavailable</span></span>
+              <span class="date-calendar-legend-status" data-i18n="bk.checkingAvailability" role="status">Checking availability…</span>
+            </div>
+          </div>
+        </div>
+        <span class="booking-slot-hint" id="bk-date-hint" data-i18n="bk.dateHint">Choose a date to see open times.</span>
+      </div>
+      <div>
+        <label for="bk-time" data-i18n="bk.q.preferredTime">Preferred Time</label>
+        <select id="bk-time" disabled>
+          <option value="" data-i18n="bk.selectDateFirst">Select a date first</option>
+        </select>
+        <div class="time-slot-grid" id="bk-time-grid" role="group" aria-label="Preferred time"></div>
+      </div>
+      <div>
+        <label for="bk-message" data-i18n="bk.q.message">Message (optional)</label>
+        <textarea id="bk-message" rows="3" data-i18n-placeholder="bk.ph.message" placeholder="Anything you'd like us to know..."></textarea>
+      </div>
+      <div class="booking-error" id="bk-error"></div>
+      <button type="submit" class="booking-submit" id="bk-submit-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span data-i18n="bk.submit" id="bookingSubmitLabel">Submit &amp; Call</span>
+      </button>
+    </form>
+    <div class="booking-thankyou" id="bookingThankYou" style="display:none;"></div>
+
+    <!-- Review Panel (shown between form fill and final submission) -->
+    <div class="booking-review" id="bookingReview">
+      <div class="booking-review-header">
+        <div class="booking-review-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div class="booking-review-header-text">
+          <strong>Review Your Booking</strong>
+          <span>Please confirm your details before submitting</span>
+        </div>
+      </div>
+
+      <!-- Dark appointment block -->
+      <div class="booking-review-appt" id="bkReviewAppt">
+        <div class="booking-review-appt-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="booking-review-appt-text">
+          <div class="booking-review-appt-date" id="bkReviewDate">—</div>
+          <div class="booking-review-appt-time" id="bkReviewTime">—</div>
+        </div>
+      </div>
+
+      <!-- Details card -->
+      <div class="booking-review-card" style="margin-top:12px;">
+        <div class="booking-review-section">
+          <div class="booking-review-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Personal Information
+          </div>
+          <div class="booking-review-row"><span class="booking-review-key">Full Name</span><span class="booking-review-val" id="bkReviewName">—</span></div>
+          <div class="booking-review-row"><span class="booking-review-key">Age</span><span class="booking-review-val" id="bkReviewAge">—</span></div>
+          <div class="booking-review-row"><span class="booking-review-key">Phone</span><span class="booking-review-val" id="bkReviewPhone">—</span></div>
+          <div class="booking-review-row" id="bkReviewEmailRow"><span class="booking-review-key">Email</span><span class="booking-review-val" id="bkReviewEmail">—</span></div>
+          <div class="booking-review-row"><span class="booking-review-key">Location</span><span class="booking-review-val" id="bkReviewLocation">—</span></div>
+        </div>
+        <div class="booking-review-section">
+          <div class="booking-review-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Services Requested
+          </div>
+          <div class="booking-review-val" id="bkReviewServices" style="font-size:13px; line-height:1.6;">—</div>
+        </div>
+        <div class="booking-review-section" id="bkReviewMessageRow" style="display:none;">
+          <div class="booking-review-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Additional Notes
+          </div>
+          <div class="booking-review-val" id="bkReviewMessage" style="font-size:13px; line-height:1.6; font-weight:400; color:var(--slate);">—</div>
+        </div>
+      </div>
+
+      <div class="booking-review-notice">
+        <strong>Almost there!</strong> Check that everything looks correct. You can go back to make changes, or confirm to submit your appointment request.
+      </div>
+
+      <div class="booking-review-actions">
+        <button type="button" class="btn booking-review-edit" id="bkReviewBack">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Edit Details
+        </button>
+        <button type="button" class="btn btn-primary" id="bkReviewConfirm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span id="bkReviewConfirmLabel">Confirm &amp; Submit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script>
+/* ---------- Language switcher (English / Filipino) ---------- */
+const translations = {
+  "cw.ph.fullName": {"en": "Type your name...", "fil": "I-type ang inyong buong pangalan..."},
+  "cw.ph.phone": {"en": "Type your phone number...", "fil": "I-type ang inyong numero ng telepono..."},
+  "cw.ph.location": {"en": "Type your location...", "fil": "I-type ang inyong lokasyon..."},
+  "cw.ph.email": {"en": "Type your email...", "fil": "I-type ang inyong email..."},
+  "cw.q.fullName": {"en": "Full Name", "fil": "Buong Pangalan"},
+  "cw.q.phone": {"en": "Phone Number", "fil": "Numero ng Telepono"},
+  "cw.q.location": {"en": "Location", "fil": "Lokasyon"},
+  "cw.q.email": {"en": "Email (optional)", "fil": "Email (opsyonal)"},
+  "cw.q.services": {"en": "Services Needed (select all that apply)", "fil": "Mga Serbisyong Kailangan (piliin ang lahat ng naaangkop)"},
+  "cw.svc1": {"en": "Oral Prophylaxis (Cleaning)", "fil": "Paglilinis ng Ngipin (Oral Prophylaxis)"},
+  "cw.svc2": {"en": "Tooth Restoration", "fil": "Pagpapasta ng Ngipin"},
+  "cw.svc3": {"en": "Oral Surgery", "fil": "Oral Surgery (Pagbunot/Operasyon)"},
+  "cw.svc4": {"en": "Orthodontic Treatment (Braces)", "fil": "Pagpapasuot ng Braces"},
+  "cw.svc5": {"en": "Root Canal Treatment", "fil": "Root Canal Treatment (Paggamot sa Ugat ng Ngipin)"},
+  "cw.svc6": {"en": "Prosthodontic Treatment", "fil": "Prosthodontic Treatment (Panunumbalik ng Ngipin)"},
+  "cw.svc7": {"en": "Dentures", "fil": "Pustiso"},
+  "cw.svc8": {"en": "Jacket Crowns", "fil": "Jacket Crowns (Korona ng Ngipin)"},
+  "cw.svc9": {"en": "Fixed Bridge", "fil": "Fixed Bridge (Tulay na Pustiso)"},
+  "cw.svcOther": {"en": "Other / Not Sure", "fil": "Iba Pa / Hindi Sigurado"},
+  "cw.otherPlaceholder": {"en": "Please specify the service(s) you need...", "fil": "Pakisulat ang serbisyong kailangan ninyo..."},
+  "cw.errorSelectService": {"en": "Please select at least one service to continue.", "fil": "Mangyaring pumili ng kahit isang serbisyo upang magpatuloy."},
+  "cw.errorSpecifyOther": {"en": "Please specify the service(s) you need.", "fil": "Pakisulat ang serbisyong kailangan ninyo."},
+  "cw.thankYou": {"en": "Thank you! Your request has been submitted successfully. We will contact you shortly.", "fil": "Salamat! Matagumpay na naipadala ang inyong kahilingan. Makikipag-ugnayan kami sa inyo sa lalong madaling panahon."},
+  "bk.title": {"en": "Book Your Appointment", "fil": "I-book ang Inyong Appointment"},
+  "bk.sub": {"en": "Fill this out and we'll connect your call right after.", "fil": "Sagutan ito at ikokonekta namin agad ang inyong tawag."},
+  "bk.submit": {"en": "Submit & Call", "fil": "Ipadala at Tumawag"},
+  "bk.subGeneric": {"en": "Fill this out and we'll get back to you shortly.", "fil": "Sagutan ito at makikipag-ugnayan kami sa inyo sa lalong madaling panahon."},
+  "bk.submitBook": {"en": "Submit Booking", "fil": "Ipadala ang Booking"},
+  "bk.closeAria": {"en": "Close", "fil": "Isara"},
+  "bk.q.serviceDate": {"en": "Service Date", "fil": "Petsa ng Serbisyo"},
+  "bk.selectDatePlaceholder": {"en": "Select a date", "fil": "Pumili ng petsa"},
+  "bk.q.age": {"en": "Age", "fil": "Edad"},
+  "bk.ph.age": {"en": "Type your age...", "fil": "Ilagay ang inyong edad..."},
+  "bk.pleaseEnterAge": {"en": "Please enter a valid age.", "fil": "Mangyaring maglagay ng wastong edad."},
+  "bk.missingFields": {"en": "Please fill out:", "fil": "Pakisulat ang:"},
+  "bk.submitting": {"en": "Submitting…", "fil": "Isinusumite…"},
+  "bk.q.preferredTime": {"en": "Preferred Time", "fil": "Nais na Oras"},
+  "bk.q.message": {"en": "Message (optional)", "fil": "Mensahe (opsyonal)"},
+  "bk.ph.message": {"en": "Anything you'd like us to know...", "fil": "Anumang gusto ninyong ipaalam sa amin..."},
+  "bk.dateHint": {"en": "Choose a date to see open times.", "fil": "Pumili ng petsa para makita ang mga bukas na oras."},
+  "bk.selectDateFirst": {"en": "Select a date first", "fil": "Pumili muna ng petsa"},
+  "bk.selectTime": {"en": "Select a time", "fil": "Pumili ng oras"},
+  "bk.closedOnDate": {"en": "Closed on this date", "fil": "Sarado sa petsang ito"},
+  "bk.closedOnDateMsg": {"en": "The clinic is closed on this date — please choose another.", "fil": "Sarado ang klinika sa petsang ito — mangyaring pumili ng iba."},
+  "bk.closedOnDateOnly": {"en": "The clinic is closed on this date.", "fil": "Sarado ang klinika sa petsang ito."},
+  "bk.loadingTimes": {"en": "Loading open times…", "fil": "Nilo-load ang mga bukas na oras…"},
+  "bk.fullyBooked": {"en": "Fully booked — please choose another date.", "fil": "Puno na ang lahat ng oras — mangyaring pumili ng ibang petsa."},
+  "bk.noTimesAvailable": {"en": "No times available", "fil": "Walang Available na Oras"},
+  "bk.unavailable": {"en": "Unavailable", "fil": "Hindi Available"},
+  "bk.checkingAvailability": {"en": "Checking availability…", "fil": "Sinusuri ang availability…"},
+  "bk.timesAvailableTap": {"en": "{n} time(s) available — tap one below.", "fil": "{n} na oras ang magagamit — pumindot ng isa sa ibaba."},
+  "bk.timesAvailableOnly": {"en": "{n} time(s) available.", "fil": "{n} na oras ang magagamit."},
+  "bk.timeJustTaken": {"en": "That time was just taken — please pick another.", "fil": "Kakakuha lang ng oras na iyan — mangyaring pumili ng iba."},
+  "bk.couldNotLoadTimes": {"en": "Could not load times —", "fil": "Hindi ma-load ang mga oras —"},
+  "bk.tryAgain": {"en": "try again", "fil": "subukan muli"},
+  "bk.pleaseChooseDate": {"en": "Please choose a service date.", "fil": "Mangyaring pumili ng petsa ng serbisyo."},
+  "bk.pleaseChooseTime": {"en": "Please choose a preferred time.", "fil": "Mangyaring pumili ng nais na oras."},
+  "bk.slotTakenBySomeoneElse": {"en": "Sorry — that time was just booked by someone else. Please pick another time.", "fil": "Paumanhin — kababook lang ng ibang tao sa oras na iyan. Mangyaring pumili ng ibang oras."},
+  "bk.dentistUnavailable": {"en": "The dentist is unavailable on this date. Please choose another date.", "fil": "Hindi available ang dentista sa petsang ito. Mangyaring pumili ng ibang petsa."},
+  "bk.dentistUnavailableShort": {"en": "Dentist unavailable", "fil": "Hindi available ang dentista"},
+  "bk.dentistUnavailableTime": {"en": "The dentist is unavailable at this time. Please select another appointment time.", "fil": "Hindi available ang dentista sa oras na ito. Mangyaring pumili ng ibang oras ng appointment."},
+  "bk.noSlotsForDate": {"en": "No appointment times are currently available for this date. Please choose another date.", "fil": "Walang available na oras ng appointment sa petsang ito sa ngayon. Mangyaring pumili ng ibang petsa."},
+  "bk.timeNoLongerAvailable": {"en": "That time is no longer available — please pick another.", "fil": "Hindi na available ang oras na iyan — mangyaring pumili ng iba."},
+  "bk.submitError": {"en": "Something went wrong submitting your booking", "fil": "May problema sa pagpapadala ng inyong booking"},
+  "bk.pleaseTryAgain": {"en": "Please try again.", "fil": "Mangyaring subukan muli."},
+  "bk.at": {"en": "at", "fil": "ng"},
+  "bk.bookingIdLabel": {"en": "Booking ID:", "fil": "Booking ID:"},
+  "bk.referenceLabel": {"en": "Reference:", "fil": "Reference:"}
+};
+
+let currentLang = 'en';
+const langButtons = document.querySelectorAll('.lang-switch button');
+function setLanguage(lang){
+  currentLang = lang;
+  document.documentElement.lang = (lang === 'fil') ? 'fil' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[key]) el.textContent = translations[key][lang];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (translations[key]) el.setAttribute('placeholder', translations[key][lang]);
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const key = el.getAttribute('data-i18n-aria');
+    if (translations[key]) el.setAttribute('aria-label', translations[key][lang]);
+  });
+  langButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));
+  document.dispatchEvent(new CustomEvent('afjLangChange'));
+}
+langButtons.forEach(btn => btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang'))));
+</script>
+
+<script>
+/* ---------- Appointment Scheduling Engine ---------------------------------
+   Real-time slots + double-booking prevention.
+   APPT_API_URL is the deployed Google Apps Script Web App that stores the
+   bookings. If it is left empty, the page runs in DEMO MODE: it simulates the
+   same API in this browser's localStorage so the full flow can be tested, but
+   nothing is shared between visitors and nothing is validated server-side. */
+const APPT_API_URL = 'https://script.google.com/macros/s/AKfycbxPFjGcMsL9k2cG-uoiAPUjGP5mhfXw7uu_lSo2Q-UIqB5axSHIMLbT40xEYzv08mKm/exec'; 
+const APPT_SLOT_START = '09:30';
+const APPT_SLOT_END = '18:00';
+const APPT_SLOT_STEP_MIN = 30;
+const APPT_CLOSED_WEEKDAYS = []; // 0=Sun ... 6=Sat. Empty = every day is bookable (Sundays were previously closed: [0]).
+const APPT_DEMO_MODE = !APPT_API_URL;
+const APPT_DEMO_DB_KEY = 'afj_appt_demo_db_v1';
+
+function apptGenerateSlots(){
+  const slots = [];
+  const [sh, sm] = APPT_SLOT_START.split(':').map(Number);
+  const [eh, em] = APPT_SLOT_END.split(':').map(Number);
+  let cur = sh * 60 + sm;
+  const end = eh * 60 + em;
+  while (cur < end){
+    const h = Math.floor(cur / 60), m = cur % 60;
+    slots.push(String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0'));
+    cur += APPT_SLOT_STEP_MIN;
+  }
+  return slots;
+}
+function apptIsClosedDate(dateStr){
+  const d = new Date(dateStr + 'T00:00:00');
+  return APPT_CLOSED_WEEKDAYS.indexOf(d.getDay()) !== -1;
+}
+function apptFormatTime12(t){
+  if (typeof t !== 'string') return String(t);
+  const s = t.trim();
+  // Already human-readable from the API (e.g. "9:00 AM", "1:30 PM") — show as-is.
+  if (/am|pm/i.test(s)) return s;
+  // Otherwise assume 24-hour "HH:MM" and convert.
+  const parts = s.split(':');
+  const h = Number(parts[0]), m = Number(parts[1]);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return s; // unknown shape — show the raw value, never "NaN"
+  const hour12 = ((h + 11) % 12) + 1;
+  return hour12 + ':' + String(m).padStart(2,'0') + ' ' + (h < 12 ? 'AM' : 'PM');
+}
+
+/* ---- Tolerant response readers for the live backend (?action=getAvailableSlots
+   / action=createBooking). These accept our own {success, slots} shape as well
+   as a few common alternate shapes (a bare array, {availableSlots:[...]},
+   {status:'success', id:...}, etc.) so the frontend works with the deployed
+   Apps Script's actual response format without needing to change that script. */
+function apptNormalizeSlotsRes(raw){
+  if (!raw) return { success:false };
+  // Dentist Availability sheet: the backend marks a fully blocked date with unavailable:true
+  // (availableSlots is empty). Keep that flag so the UI can tell it apart from "fully booked".
+  if (raw.success !== false && raw.unavailable === true){
+    return { success:true, closed:false, unavailable:true, message: raw.message || '', slots:[] };
+  }
+  if (typeof raw.success === 'boolean' && (Array.isArray(raw.slots) || raw.closed)) return raw;
+  const arr = Array.isArray(raw) ? raw
+    : Array.isArray(raw.slots) ? raw.slots
+    : Array.isArray(raw.availableSlots) ? raw.availableSlots
+    : Array.isArray(raw.available) ? raw.available
+    : Array.isArray(raw.times) ? raw.times
+    : Array.isArray(raw.data) ? raw.data
+    : null;
+  if (arr === null){
+    if (raw.success === false || raw.error || raw.status === 'error') return { success:false, error: raw.error || raw.message };
+    return { success:true, closed:false, slots:[] };
+  }
+  const closed = !!(raw.closed || raw.isClosed || raw.dayClosed);
+  return { success:true, closed, slots: arr };
+}
+function apptNormalizeBookingRes(raw){
+  if (!raw) return { success:false, error:'network_error', detail:'No response from server.' };
+  const bookingId = raw.bookingId || raw.id || raw.BookingID || raw.booking_id || raw.bookingID;
+  const successish = raw.success === true || raw.status === 'success' || raw.status === 'ok' || raw.result === 'success' || raw.result === 'ok' || raw.ok === true || !!bookingId;
+  if (successish) return { success:true, bookingId: bookingId || '' };
+  const msg = (raw.error || raw.message || '').toString();
+  const lower = msg.toLowerCase();
+  const lowerAll = (msg + ' ' + (raw.message || '')).toLowerCase();
+  if (raw.error === 'dentist_unavailable' || lowerAll.indexOf('dentist is unavailable') !== -1 || lowerAll.indexOf('dentist unavailable') !== -1){
+    return { success:false, error:'dentist_unavailable', detail: msg || (raw.message || '').toString() };
+  }
+  if (raw.error === 'slot_taken' || lower.indexOf('taken') !== -1 || lower.indexOf('already booked') !== -1 || lower.indexOf('unavailable') !== -1){
+    return { success:false, error:'slot_taken', detail: msg };
+  }
+  let detail = msg;
+  if (!detail){
+    try{ detail = JSON.stringify(raw).slice(0, 220); }catch(e){ detail = String(raw); }
+  }
+  return { success:false, error: raw.error || 'unknown_error', detail: detail };
+}
+
+/* ---- Demo-mode local "database" (localStorage) ---- */
+function apptDemoRead(){
+  try{ return JSON.parse(localStorage.getItem(APPT_DEMO_DB_KEY)) || []; }catch(e){ return []; }
+}
+function apptDemoWrite(rows){
+  try{ localStorage.setItem(APPT_DEMO_DB_KEY, JSON.stringify(rows)); }catch(e){}
+}
+function apptDemoId(){
+  return 'AFJ-' + Date.now().toString(36).toUpperCase().slice(-6) + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+}
+function apptDemoTakenSlots(date){
+  return apptDemoRead().filter(r => r.date === date && (r.status === 'booked' || r.status === 'blocked')).map(r => r.time);
+}
+
+/* ---- Unified API: talks to the real backend, or the local demo one ---- */
+function apptApiGet(action, params){
+  params = params || {};
+  if (!APPT_DEMO_MODE){
+    const qs = new URLSearchParams(Object.assign({ action }, params)).toString();
+    return fetch(APPT_API_URL + '?' + qs, { cache:'no-store' }).then(r => r.json()).catch(err => { console.error('Appointment GET request failed:', err); return { success:false, error:'network_error' }; });
+  }
+  // ----- demo mode -----
+  return new Promise(resolve => {
+    if (action === 'getAvailableSlots'){
+      const date = params.date;
+      if (apptIsClosedDate(date)) return resolve({ success:true, closed:true, slots:[] });
+      const taken = apptDemoTakenSlots(date);
+      const today = new Date().toISOString().slice(0,10);
+      const nowMinutes = new Date().getHours()*60 + new Date().getMinutes();
+      const slots = apptGenerateSlots().filter(t => {
+        if (taken.indexOf(t) !== -1) return false;
+        if (date === today){
+          const [h,m] = t.split(':').map(Number);
+          if (h*60+m <= nowMinutes + 30) return false;
+        }
+        return true;
+      });
+      resolve({ success:true, closed:false, slots });
+    } else if (action === 'dates'){
+      const days = params.days || 45;
+      const out = [];
+      for (let i = 0; i < days; i++){
+        const d = new Date(Date.now() + i*86400000);
+        const dateStr = d.toISOString().slice(0,10);
+        if (apptIsClosedDate(dateStr)){ out.push({ date:dateStr, available:false, closed:true }); continue; }
+        const taken = apptDemoTakenSlots(dateStr);
+        out.push({ date:dateStr, available: apptGenerateSlots().length > taken.length, closed:false });
+      }
+      resolve({ success:true, dates: out });
+    } else if (action === 'adminList'){
+      if (params.key !== 'demo') return resolve({ success:false, error:'unauthorized' });
+      resolve({ success:true, appointments: apptDemoRead() });
+    } else {
+      resolve({ success:false, error:'unknown_action' });
+    }
+  });
+}
+function apptApiPost(action, body){
+  body = Object.assign({ action }, body || {});
+  if (!APPT_DEMO_MODE){
+    // Your backend parses the POST body with JSON.parse(e.postData.contents),
+    // so this must be sent as JSON (confirmed by the "action=cre... is not
+    // valid JSON" error your script returned when it was form-encoded).
+    // A 12s timeout keeps this from hanging indefinitely on a slow connection.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    return fetch(APPT_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // keeps this a CORS-simple request; body is still JSON text
+      body: JSON.stringify(body),
+      signal: controller.signal
+    }).then(r => r.json())
+      .catch(err => {
+        const timedOut = err && err.name === 'AbortError';
+        console.error('Booking POST failed:', err);
+        return { success:false, error:'network_error', detail: timedOut ? 'The request took too long and timed out.' : String(err && err.message || err) };
+      })
+      .finally(() => clearTimeout(timer));
+  }
+  // ----- demo mode -----
+  return new Promise(resolve => {
+    const rows = apptDemoRead();
+    if (action === 'createBooking'){
+      const { fullName, phone, email, location, service, date, time, message } = body;
+      if (!fullName || !phone || !location || !service || !date || !time){
+        return resolve({ success:false, error:'missing_fields' });
+      }
+      if (apptIsClosedDate(date)) return resolve({ success:false, error:'closed_date' });
+      const taken = apptDemoTakenSlots(date);
+      if (taken.indexOf(time) !== -1) return resolve({ success:false, error:'slot_taken' });
+      const bookingId = apptDemoId();
+      rows.push({ bookingId, fullName, phone, email: email||'', location, service, date, time, status:'booked', message: message||'', createdAt: new Date().toISOString() });
+      apptDemoWrite(rows);
+      resolve({ success:true, bookingId });
+    } else if (action === 'adminBlock'){
+      if (body.key !== 'demo') return resolve({ success:false, error:'unauthorized' });
+      const slotsToBlock = body.time ? [body.time] : apptGenerateSlots();
+      const taken = apptDemoTakenSlots(body.date);
+      slotsToBlock.forEach(t => {
+        if (taken.indexOf(t) === -1){
+          rows.push({ bookingId:'BLOCK-'+apptDemoId().slice(4), fullName:'Blocked by owner', phone:'', email:'', location:'', service: body.reason||'Blocked', date: body.date, time: t, status:'blocked', message: body.reason||'', createdAt: new Date().toISOString() });
+        }
+      });
+      apptDemoWrite(rows);
+      resolve({ success:true });
+    } else if (action === 'adminCancel' || action === 'adminUnblock'){
+      if (body.key !== 'demo') return resolve({ success:false, error:'unauthorized' });
+      const idx = rows.findIndex(r => r.bookingId === body.bookingId);
+      if (idx === -1) return resolve({ success:false, error:'not_found' });
+      if (action === 'adminUnblock') rows.splice(idx, 1);
+      else rows[idx].status = 'cancelled';
+      apptDemoWrite(rows);
+      resolve({ success:true });
+    } else if (action === 'adminEdit'){
+      if (body.key !== 'demo') return resolve({ success:false, error:'unauthorized' });
+      const idx = rows.findIndex(r => r.bookingId === body.bookingId);
+      if (idx === -1) return resolve({ success:false, error:'not_found' });
+      const row = rows[idx];
+      const newDate = body.date || row.date, newTime = body.time || row.time;
+      if (newDate !== row.date || newTime !== row.time){
+        const taken = apptDemoTakenSlots(newDate).filter(t => !(newDate === row.date && t === row.time));
+        if (taken.indexOf(newTime) !== -1) return resolve({ success:false, error:'slot_taken' });
+      }
+      Object.assign(row, {
+        fullName: body.fullName ?? row.fullName, phone: body.phone ?? row.phone, email: body.email ?? row.email,
+        location: body.location ?? row.location, service: body.service ?? row.service,
+        date: newDate, time: newTime, status: body.status ?? row.status, message: body.message ?? row.message
+      });
+      apptDemoWrite(rows);
+      resolve({ success:true });
+    } else {
+      resolve({ success:false, error:'unknown_action' });
+    }
+  });
+}
+window.ApptAPI = { get: apptApiGet, post: apptApiPost, demoMode: APPT_DEMO_MODE, generateSlots: apptGenerateSlots, formatTime12: apptFormatTime12 };
+
+/* ---------- Booking form ---------- */
+document.addEventListener('DOMContentLoaded', function(){
+  const bkModal = document.getElementById('bookingModal');
+  if (!bkModal) return;
+
+  const bkForm = document.getElementById('bookingForm');
+  const bkError = document.getElementById('bk-error');
+  const bkOtherCheckbox = document.getElementById('bk-other-checkbox');
+  const bkOtherInput = document.getElementById('bk-other-input');
+  const bkSubmitBtn = document.getElementById('bk-submit-btn');
+  const bkSubmitLabel = document.getElementById('bookingSubmitLabel');
+  const bkSub = document.getElementById('bookingModalSub');
+  const bkTitle = document.getElementById('bookingModalTitle');
+  const bkThankYou = document.getElementById('bookingThankYou');
+  const bkReview = document.getElementById('bookingReview');
+  const bkReviewBack = document.getElementById('bkReviewBack');
+  const bkReviewConfirm = document.getElementById('bkReviewConfirm');
+  const bkReviewConfirmLabel = document.getElementById('bkReviewConfirmLabel');
+
+  // Stored pending submission data (set when form passes validation, cleared on back/success/error)
+  let bkPendingPayload = null;
+  const bkDate = document.getElementById('bk-date');
+  const bkTime = document.getElementById('bk-time');
+  const bkTimeGrid = document.getElementById('bk-time-grid');
+  const bkMessage = document.getElementById('bk-message');
+  const bkDateHint = document.getElementById('bk-date-hint');
+
+  let bkPhoneToCall = null; // set only when opened from a "call" trigger; null means booking-only (no auto-dial)
+  let bkSlotRefreshTimer = null;
+
+  // Dates the backend has just reported as fully unavailable (Availability sheet, Full Day = TRUE).
+  // This is only a short-lived hint used to grey the day out in the calendar; the time slots are
+  // ALWAYS requested fresh from the backend every time a date is selected (nothing is cached).
+  const bkUnavailableDates = new Map();
+  const BK_UNAVAILABLE_HINT_MS = 2 * 60 * 1000;
+  let bkSlotReqSeq = 0; // lets a newer date selection ignore a slower, older response
+  function bkIsDentistUnavailable(dateStr){
+    const t = bkUnavailableDates.get(dateStr);
+    if (t === undefined) return false;
+    if (Date.now() - t > BK_UNAVAILABLE_HINT_MS){ bkUnavailableDates.delete(dateStr); return false; }
+    return true;
+  }
+  function bkIsDateBlocked(dateStr){
+    return apptIsClosedDate(dateStr) || bkIsDentistUnavailable(dateStr) || bkCalPreviewBlocked(dateStr);
+  }
+
+  /* ---------- Calendar availability preview ----------
+     When the calendar is opened (or the month changes), each bookable date in view is checked with the
+     same getAvailableSlots request that runs when a date is picked. A date the dentist can't take
+     (unavailable, closed, or no times left) is then shown as unavailable and can't be clicked, so the
+     client sees it BEFORE choosing it. Time slots are still requested fresh when a date is picked. */
+  const bkCalAvail = new Map();   // dateStr -> { t: when it was checked, blocked: true/false }
+  const bkCalPending = new Set(); // dates queued or being checked right now
+  let bkCalQueue = [];
+  let bkCalActive = 0;
+  const BK_CAL_CONCURRENCY = 5;
+  function bkCalPreviewBlocked(dateStr){
+    const e = bkCalAvail.get(dateStr);
+    return !!(e && e.blocked && Date.now() - e.t <= BK_UNAVAILABLE_HINT_MS);
+  }
+  function bkCalUpdateStatus(){
+    const legend = document.getElementById('bkCalLegend');
+    if (legend) legend.classList.toggle('is-checking', bkCalPending.size > 0);
+  }
+  function bkPrefetchMonth(year, month){
+    // Only the month in view matters: drop queued (not yet started) checks for other months
+    bkCalQueue.forEach(function(d){ bkCalPending.delete(d); });
+    bkCalQueue = [];
+    const todayStr = bkDateStr(bkToday), maxStr = bkDateStr(bkMaxDate);
+    const last = new Date(year, month + 1, 0).getDate();
+    for (let d = 1; d <= last; d++){
+      const dateStr = bkDateStr(new Date(year, month, d));
+      if (dateStr < todayStr || dateStr > maxStr) continue;
+      if (apptIsClosedDate(dateStr)) continue;
+      const e = bkCalAvail.get(dateStr);
+      if (e && Date.now() - e.t <= BK_UNAVAILABLE_HINT_MS) continue;
+      if (bkCalPending.has(dateStr)) continue;
+      bkCalPending.add(dateStr);
+      bkCalQueue.push(dateStr);
+    }
+    bkCalPump();
+    bkCalUpdateStatus();
+  }
+  function bkCalPump(){
+    while (bkCalActive < BK_CAL_CONCURRENCY && bkCalQueue.length){
+      const dateStr = bkCalQueue.shift();
+      bkCalActive++;
+      window.ApptAPI.get('getAvailableSlots', { date: dateStr }).then(function(raw){
+        const res = apptNormalizeSlotsRes(raw);
+        // A failed check leaves the date clickable; picking it still asks the backend directly.
+        const blocked = !!(res && res.success !== false && (res.unavailable || res.closed || !res.slots || res.slots.length === 0));
+        const wasBlocked = bkCalPreviewBlocked(dateStr);
+        bkCalAvail.set(dateStr, { t: Date.now(), blocked: blocked });
+        if (blocked !== wasBlocked){
+          const calPopup = document.getElementById('bkCalendarPopup');
+          if (calPopup && !calPopup.hidden) bkCalendar.render();
+        }
+      }).catch(function(){}).then(function(){
+        bkCalActive--;
+        bkCalPending.delete(dateStr);
+        bkCalPump();
+        bkCalUpdateStatus();
+      });
+    }
+  }
+
+  // Restrict the date picker to today .. 90 days out
+  const bkToday = new Date();
+  const bkMaxDate = new Date(bkToday.getTime() + 90 * 86400000);
+
+  /* ---------- Custom calendar widget (replaces the native input[type="date"] popup) ----------
+     Built as a small, self-contained module so its date range, disabled-day rule and month/
+     weekday labels are all just config — drop another `.date-field` block on the page (with its
+     own trigger/popup ids) and call bkInitCalendar() again with different options to reuse it
+     for any other date field. */
+  const CAL_MONTHS = {
+    en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    fil:['Enero','Pebrero','Marso','Abril','Mayo','Hunyo','Hulyo','Agosto','Setyembre','Oktubre','Nobyembre','Disyembre']
+  };
+  const CAL_WEEKDAYS = {
+    en:['Su','Mo','Tu','We','Th','Fr','Sa'],
+    fil:['Li','Lu','Ma','Mi','Hu','Bi','Sa']
+  };
+  function bkDateStr(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function bkFormatDateDisplay(dateStr){
+    const [y,m,d] = dateStr.split('-').map(Number);
+    const months = CAL_MONTHS[currentLang] || CAL_MONTHS.en;
+    return months[m-1] + ' ' + d + ', ' + y;
+  }
+
+  function bkInitCalendar(opts){
+    const field = opts.field, trigger = opts.trigger, triggerText = opts.triggerText,
+          hiddenInput = opts.input, popup = opts.popup, monthLabel = opts.monthLabel,
+          weekdaysEl = opts.weekdays, gridEl = opts.grid, prevBtn = opts.prev,
+          nextBtn = opts.next, todayBtn = opts.today, minDate = opts.minDate, maxDate = opts.maxDate,
+          isDisabled = opts.isDisabled || function(){ return false; }, onSelect = opts.onSelect || function(){}, onView = opts.onView || function(){};
+    const minStr = bkDateStr(minDate), maxStr = bkDateStr(maxDate);
+    let view = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+
+    function render(){
+      const year = view.getFullYear(), month = view.getMonth();
+      const months = CAL_MONTHS[currentLang] || CAL_MONTHS.en;
+      const wd = CAL_WEEKDAYS[currentLang] || CAL_WEEKDAYS.en;
+      monthLabel.textContent = months[month] + ' ' + year;
+      weekdaysEl.innerHTML = wd.map(w => '<span>' + w + '</span>').join('');
+
+      const firstOffset = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const cells = [];
+      for (let i = firstOffset; i > 0; i--) cells.push({ date:new Date(year, month, 1 - i), outside:true });
+      for (let d = 1; d <= daysInMonth; d++) cells.push({ date:new Date(year, month, d), outside:false });
+      while (cells.length % 7 !== 0){
+        const last = cells[cells.length - 1].date;
+        cells.push({ date:new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1), outside:true });
+      }
+
+      const selectedStr = hiddenInput.value || '';
+      const todayStr = bkDateStr(bkToday);
+      gridEl.innerHTML = cells.map(cell => {
+        const dateStr = bkDateStr(cell.date);
+        const isToday = dateStr === todayStr;
+        const outOfRange = dateStr < minStr || dateStr > maxStr;
+        const closed = !cell.outside && isDisabled(dateStr, cell.date);
+        const unavailable = closed && !outOfRange; // in range, but the clinic/dentist can't take it
+        const isSelected = dateStr === selectedStr && !closed; // an unavailable day is never highlighted
+        const disabled = cell.outside || outOfRange || closed;
+        let cls = 'date-calendar-day';
+        if (cell.outside || (outOfRange && dateStr < minStr)) cls += ' is-past';
+        if (cell.outside) cls += ' is-outside';
+        if (isToday) cls += ' is-today';
+        if (unavailable) cls += ' is-unavailable';
+        if (isSelected) cls += ' is-selected';
+        return '<button type="button" class="' + cls + '" data-date="' + dateStr + '"' +
+          (disabled ? ' disabled' : '') + (unavailable ? ' title="' + bkT('bk.unavailable', 'Unavailable') + '"' : '') +
+          ' aria-label="' + dateStr + (unavailable ? ' — ' + bkT('bk.unavailable', 'Unavailable') : '') + '"' + (isSelected ? ' aria-current="date"' : '') + '>' +
+          cell.date.getDate() + '</button>';
+      }).join('');
+      gridEl.querySelectorAll('.date-calendar-day:not(:disabled)').forEach(btn => {
+        btn.addEventListener('click', () => select(btn.getAttribute('data-date')));
+      });
+
+      const prevMonthEnd = new Date(year, month, 0);
+      const nextMonthStart = new Date(year, month + 1, 1);
+      prevBtn.disabled = bkDateStr(prevMonthEnd) < minStr;
+      nextBtn.disabled = bkDateStr(nextMonthStart) > maxStr;
+      onView(year, month); // lets the page check availability for the month now in view
+    }
+
+    function select(dateStr){
+      hiddenInput.value = dateStr;
+      triggerText.textContent = bkFormatDateDisplay(dateStr);
+      triggerText.classList.remove('date-field-placeholder');
+      triggerText.removeAttribute('data-i18n');
+      close();
+      hiddenInput.dispatchEvent(new Event('change'));
+    }
+
+    function outsideClick(e){ if (!field.contains(e.target)) close(); }
+    function onKeydown(e){ if (e.key === 'Escape'){ close(); trigger.focus(); } }
+
+    function open(){
+      const base = hiddenInput.value ? new Date(hiddenInput.value + 'T00:00:00') : new Date(minDate);
+      view = new Date(base.getFullYear(), base.getMonth(), 1);
+      render();
+      popup.hidden = false;
+      field.classList.add('open');
+      trigger.setAttribute('aria-expanded', 'true');
+      document.addEventListener('click', outsideClick, true);
+      document.addEventListener('keydown', onKeydown, true);
+    }
+    function close(){
+      popup.hidden = true;
+      field.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+      document.removeEventListener('click', outsideClick, true);
+      document.removeEventListener('keydown', onKeydown, true);
+    }
+    function reset(placeholderKey, placeholderFallback){
+      hiddenInput.value = '';
+      triggerText.setAttribute('data-i18n', placeholderKey);
+      triggerText.textContent = bkT(placeholderKey, placeholderFallback);
+      triggerText.classList.add('date-field-placeholder');
+      close();
+    }
+
+    trigger.addEventListener('click', () => { popup.hidden ? open() : close(); });
+    prevBtn.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); render(); });
+    nextBtn.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); render(); });
+    if (todayBtn) todayBtn.addEventListener('click', () => { view = new Date(minDate.getFullYear(), minDate.getMonth(), 1); render(); });
+    document.addEventListener('afjLangChange', () => {
+      if (hiddenInput.value) triggerText.textContent = bkFormatDateDisplay(hiddenInput.value);
+      if (!popup.hidden) render();
+    });
+
+    return { reset, close, render };
+  }
+
+  const bkCalendar = bkInitCalendar({
+    field: document.getElementById('bkDateField'),
+    trigger: document.getElementById('bkDateTrigger'),
+    triggerText: document.getElementById('bkDateTriggerText'),
+    input: bkDate,
+    popup: document.getElementById('bkCalendarPopup'),
+    monthLabel: document.getElementById('bkCalMonthLabel'),
+    weekdays: document.getElementById('bkCalWeekdays'),
+    grid: document.getElementById('bkCalGrid'),
+    prev: document.getElementById('bkCalPrev'),
+    next: document.getElementById('bkCalNext'),
+    today: document.getElementById('bkCalToday'),
+    minDate: bkToday,
+    maxDate: bkMaxDate,
+    isDisabled: bkIsDateBlocked,
+    onView: bkPrefetchMonth
+  });
+
+  // Renders the tap-friendly button grid and keeps the hidden #bk-time
+  // <select> (the real, existing form value) perfectly in sync with it.
+  function bkRenderTimeGrid(slots, selectedTime){
+    if (!slots || slots.length === 0){
+      bkTimeGrid.innerHTML = '';
+      bkTimeGrid.classList.remove('has-selection');
+      return;
+    }
+    bkTimeGrid.classList.toggle('has-selection', !!selectedTime);
+    bkTimeGrid.innerHTML = slots.map(t =>
+      '<button type="button" class="time-slot-btn' + (t === selectedTime ? ' selected' : '') + '" data-time="' + t + '">' + apptFormatTime12(t) + '</button>'
+    ).join('');
+    bkTimeGrid.querySelectorAll('.time-slot-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.getAttribute('data-time');
+        if (btn.classList.contains('selected')){
+          // Tapping the chosen time again brings the rest of the list back so it can be changed.
+          bkTime.value = '';
+          bkTimeGrid.classList.remove('has-selection');
+          bkTimeGrid.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
+        } else {
+          bkTime.value = t;
+          bkTimeGrid.classList.add('has-selection');
+          bkTimeGrid.querySelectorAll('.time-slot-btn').forEach(b => b.classList.toggle('selected', b === btn));
+        }
+        bkShowError('');
+      });
+    });
+  }
+
+  function bkResetTimeSelect(msg){
+    bkTime.innerHTML = '<option value="">' + (msg || bkT('bk.selectDateFirst', 'Select a date first')) + '</option>';
+    bkTime.value = '';
+    bkTime.disabled = true;
+    bkTimeGrid.innerHTML = msg ? '<div class="time-slot-grid-msg">' + msg + '</div>' : '';
+  }
+
+  // silent = true for the background 20s refresh: keeps whatever time the
+  // user already tapped selected instead of wiping the grid and forcing
+  // them to pick again, and stays quiet if that background check fails.
+  function bkLoadSlots(silent){
+    const date = bkDate.value;
+    if (!date){ bkResetTimeSelect(''); return; }
+    if (apptIsClosedDate(date)){
+      bkResetTimeSelect(bkT('bk.closedOnDate', 'Closed on this date'));
+      bkDateHint.textContent = bkT('bk.closedOnDateMsg', 'The clinic is closed on this date — please choose another.');
+      bkDateHint.classList.add('warn');
+      return;
+    }
+    const previousSelected = bkTime.value;
+    const reqId = silent ? bkSlotReqSeq : ++bkSlotReqSeq; // user-picked dates start a new request; background refreshes don't cancel it
+    if (!silent){
+      bkDateHint.classList.remove('warn');
+      bkDateHint.textContent = bkT('bk.loadingTimes', 'Loading open times…');
+      bkTime.disabled = true;
+      bkTime.innerHTML = '<option value="">' + bkT('bk.loadingTimes', 'Loading…') + '</option>';
+      bkTimeGrid.innerHTML = '<div class="time-slot-grid-msg">' + bkT('bk.loadingTimes', 'Loading open times…') + '</div>';
+    }
+
+    function attempt(retriesLeft){
+      window.ApptAPI.get('getAvailableSlots', { date }).then(rawRes => {
+        if (bkDate.value !== date) return; // user changed date while loading
+        if (reqId !== bkSlotReqSeq) return; // a newer date selection superseded this response
+        const res = apptNormalizeSlotsRes(rawRes);
+        if (!res || res.success === false){
+          if (retriesLeft > 0){ setTimeout(() => attempt(retriesLeft - 1), 500); return; }
+          if (silent) return; // don't disturb the form over a background refresh hiccup
+          bkDateHint.innerHTML = bkT('bk.couldNotLoadTimes', 'Could not load times —') + ' <button type="button" class="bk-hint-retry">' + bkT('bk.tryAgain', 'try again') + '</button>.';
+          bkDateHint.classList.add('warn');
+          const retryBtn = bkDateHint.querySelector('.bk-hint-retry');
+          if (retryBtn) retryBtn.addEventListener('click', () => bkLoadSlots(false));
+          bkResetTimeSelect(bkT('bk.unavailable', 'Unavailable'));
+          return;
+        }
+        if (res.unavailable){
+          // Dentist is unavailable all day (Availability sheet). Show no times and grey the day out.
+          bkUnavailableDates.set(date, Date.now());
+          const calPopup = document.getElementById('bkCalendarPopup');
+          if (calPopup && !calPopup.hidden) bkCalendar.render();
+          bkDateHint.textContent = bkT('bk.dentistUnavailable', 'The dentist is unavailable on this date. Please choose another date.');
+          bkDateHint.classList.add('warn');
+          bkResetTimeSelect(bkT('bk.dentistUnavailableShort', 'Dentist unavailable'));
+          return;
+        }
+        bkUnavailableDates.delete(date); // fresh answer from the backend: this date is bookable again
+        if (res.closed || !res.slots || res.slots.length === 0){
+          bkDateHint.textContent = res.closed ? bkT('bk.closedOnDateOnly', 'The clinic is closed on this date.') : bkT('bk.noSlotsForDate', 'No appointment times are currently available for this date. Please choose another date.');
+          bkDateHint.classList.add('warn');
+          bkResetTimeSelect(bkT('bk.noTimesAvailable', 'No times available'));
+          return;
+        }
+        bkTime.innerHTML = '<option value="">' + bkT('bk.selectTime', 'Select a time') + '</option>' + res.slots.map(t => '<option value="'+t+'">'+apptFormatTime12(t)+'</option>').join('');
+        bkTime.disabled = false;
+
+        const keepSelection = previousSelected && res.slots.indexOf(previousSelected) !== -1;
+        if (keepSelection){
+          bkTime.value = previousSelected;
+          bkDateHint.classList.remove('warn');
+          bkDateHint.textContent = bkT('bk.timesAvailableOnly', '{n} time(s) available.').replace('{n}', res.slots.length);
+        } else {
+          bkTime.value = '';
+          if (previousSelected){
+            bkDateHint.textContent = bkT('bk.timeNoLongerAvailable', 'That time is no longer available — please pick another.');
+            bkDateHint.classList.add('warn');
+          } else {
+            bkDateHint.classList.remove('warn');
+            bkDateHint.textContent = bkT('bk.timesAvailableTap', '{n} time(s) available — tap one below.').replace('{n}', res.slots.length);
+          }
+        }
+        bkRenderTimeGrid(res.slots, keepSelection ? previousSelected : '');
+      });
+    }
+    attempt(1); // one silent retry before showing an error (helps on flaky mobile connections)
+  }
+
+  bkDate.addEventListener('change', () => bkLoadSlots(false));
+
+  function bkStartPolling(){
+    bkStopPolling();
+    // Keep availability fresh while the modal is open (real-time updates)
+    bkSlotRefreshTimer = setInterval(() => { if (bkDate.value) bkLoadSlots(true); }, 20000);
+  }
+  function bkStopPolling(){
+    if (bkSlotRefreshTimer){ clearInterval(bkSlotRefreshTimer); bkSlotRefreshTimer = null; }
+  }
+
+  function bkT(key, fallback){
+    const activeBtn = document.querySelector('.lang-switch button.active');
+    const lang = activeBtn ? activeBtn.getAttribute('data-lang') : ((typeof currentLang !== 'undefined') ? currentLang : 'en');
+    if (typeof translations !== 'undefined' && translations[key]) return translations[key][lang] || translations[key].en;
+    return fallback;
+  }
+
+  function bkShowError(msg){
+    bkError.textContent = msg;
+    bkError.style.display = msg ? 'block' : 'none';
+  }
+
+  function bkOpenModal(phone){
+    bkPhoneToCall = phone || null;
+    bkSubmitting = false;
+    bkReviewConfirm.disabled = false; // was left disabled after a successful booking, blocking a 2nd booking without a page reload
+    bkForm.reset();
+    bkForm.style.display = 'flex';
+    bkThankYou.style.display = 'none';
+    bkThankYou.style.whiteSpace = '';
+    bkTitle.style.display = '';
+    bkSub.style.display = '';
+    bkOtherInput.style.display = 'none';
+    bkOtherInput.value = '';
+    bkShowError('');
+    bkPendingPayload = null;
+    bkUnavailableDates.clear();
+    bkCalAvail.clear(); bkCalQueue = []; bkCalPending.clear(); bkCalUpdateStatus();
+    bkSlotReqSeq++;
+    bkReview.style.display = 'none';
+    bkCalendar.reset('bk.selectDatePlaceholder', 'Select a date');
+    bkResetTimeSelect(bkT('bk.selectDateFirst', 'Select a date first'));
+    bkDateHint.textContent = bkT('bk.dateHint', 'Choose a date to see open times.');
+    bkDateHint.classList.remove('warn');
+    bkSubmitLabel.textContent = bkPhoneToCall
+      ? bkT('bk.submit', 'Submit & Call')
+      : bkT('bk.submitBook', 'Submit Booking');
+    bkSub.textContent = bkPhoneToCall
+      ? bkT('bk.sub', "Fill this out and we'll connect your call right after.")
+      : bkT('bk.subGeneric', "Fill this out and we'll get back to you shortly.");
+    bkModal.classList.add('open');
+    bkModal.setAttribute('aria-hidden', 'false');
+    bkStartPolling();
+  }
+
+  function bkCloseModal(){
+    bkModal.classList.remove('open');
+    bkModal.setAttribute('aria-hidden', 'true');
+    bkStopPolling();
+    bkCalendar.close();
+  }
+
+  bkOtherCheckbox.addEventListener('change', function(){
+    bkOtherInput.style.display = bkOtherCheckbox.checked ? 'block' : 'none';
+    if (!bkOtherCheckbox.checked) bkOtherInput.value = '';
+  });
+
+  let bkSubmitting = false; // extra guard against duplicate submissions beyond just disabling the button
+
+  /* ---------- Shared submission logic (called from the review Confirm button) ---------- */
+  function bkDoSubmit(payload, date, time){
+    bkSubmitting = true;
+    bkReviewConfirm.disabled = true;
+    bkReviewConfirmLabel.textContent = bkT('bk.submitting', 'Submitting…');
+
+    function bkFinishSubmitAttempt(showError){
+      bkSubmitting = false;
+      bkReviewConfirm.disabled = false;
+      bkReviewConfirmLabel.textContent = bkPhoneToCall
+        ? bkT('bk.submit', 'Submit & Call')
+        : bkT('bk.submitBook', 'Confirm & Submit');
+      if (showError) bkShowError(showError);
+    }
+
+    window.ApptAPI.post('createBooking', payload).then(rawRes => {
+      const res = apptNormalizeBookingRes(rawRes);
+      if (!res || res.success === false){
+        console.error('Booking submission was not recognized as successful. Raw API response:', rawRes);
+        if (res && res.error === 'slot_taken'){
+          // Slot was taken between review and confirm — go back to form
+          bkPendingPayload = null;
+          bkReview.style.display = 'none';
+          bkForm.style.display = 'flex';
+          bkTitle.style.display = '';
+          bkSub.style.display = '';
+          bkFinishSubmitAttempt('');
+          bkShowError(bkT('bk.slotTakenBySomeoneElse', 'Sorry — that time was just booked by someone else. Please pick another time.'));
+          bkLoadSlots(false);
+        } else if (res && res.error === 'dentist_unavailable'){
+          // Dentist became unavailable (date or time) after the customer picked it — back to the form,
+          // show the message, then refresh the times (and grey the date out if it is now blocked).
+          bkPendingPayload = null;
+          bkReview.style.display = 'none';
+          bkForm.style.display = 'flex';
+          bkTitle.style.display = '';
+          bkSub.style.display = '';
+          bkFinishSubmitAttempt('');
+          const why = res.detail || '';
+          bkShowError(
+            /at this time/i.test(why) ? bkT('bk.dentistUnavailableTime', 'The dentist is unavailable at this time. Please select another appointment time.')
+            : /on this date/i.test(why) ? bkT('bk.dentistUnavailable', 'The dentist is unavailable on this date. Please choose another date.')
+            : (why || bkT('bk.dentistUnavailable', 'The dentist is unavailable on this date. Please choose another date.'))
+          );
+          bkLoadSlots(false);
+        } else {
+          bkFinishSubmitAttempt(
+            bkT('bk.submitError', 'Something went wrong submitting your booking') +
+            (res && res.detail ? ' — ' + res.detail : '') + '. ' +
+            bkT('bk.pleaseTryAgain', 'Please try again.')
+          );
+        }
+        return;
+      }
+      bkStopPolling();
+      bkLoadSlots(true);
+      if (bkPhoneToCall){
+        bkSubmitting = false;
+        bkCloseModal();
+        window.location.href = bkPhoneToCall;
+      } else {
+        bkSubmitting = false;
+        bkThankYou.innerHTML = bkT('cw.thankYou', 'Thank you! Your request has been submitted successfully. We will contact you shortly.') +
+          (res.bookingId ? '<br><br><strong>' + bkT('bk.bookingIdLabel', 'Booking ID:') + ' ' + res.bookingId + '</strong><br>' : '<br><br>') +
+          date + ' ' + bkT('bk.at', 'at') + ' ' + apptFormatTime12(time);
+        bkReview.style.display = 'none';
+        bkTitle.style.display = 'none';
+        bkSub.style.display = 'none';
+        bkThankYou.style.display = 'block';
+      }
+    }).catch(err => {
+      console.error('Unexpected error while submitting booking:', err);
+      bkFinishSubmitAttempt(
+        bkT('bk.submitError', 'Something went wrong submitting your booking') + '. ' +
+        bkT('bk.pleaseTryAgain', 'Please try again.')
+      );
+    });
+  }
+
+  /* ---------- Form submit → show review panel ---------- */
+  bkForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (bkSubmitting) return;
+    bkShowError('');
+
+    const fullName = document.getElementById('bk-fullName').value.trim();
+    const ageRaw = document.getElementById('bk-age').value.trim();
+    const phone = document.getElementById('bk-phone').value.trim();
+    const location = document.getElementById('bk-location').value.trim();
+    const email = document.getElementById('bk-email').value.trim();
+
+    const missingFields = [];
+    if (!fullName) missingFields.push(bkT('cw.q.fullName', 'Full Name'));
+    if (!ageRaw) missingFields.push(bkT('bk.q.age', 'Age'));
+    if (!phone) missingFields.push(bkT('cw.q.phone', 'Phone Number'));
+    if (!location) missingFields.push(bkT('cw.q.location', 'Location'));
+    if (missingFields.length > 0){
+      bkShowError(bkT('bk.missingFields', 'Please fill out:') + ' ' + missingFields.join(', ') + '.');
+      return;
+    }
+
+    const age = Number(ageRaw);
+    if (!Number.isFinite(age) || age <= 0 || age > 120){
+      bkShowError(bkT('bk.pleaseEnterAge', 'Please enter a valid age.'));
+      return;
+    }
+
+    const selected = Array.from(bkForm.querySelectorAll('#bk-services-list input[type="checkbox"]:checked'));
+    if (selected.length === 0){
+      bkShowError(bkT('cw.errorSelectService', 'Please select at least one service to continue.'));
+      return;
+    }
+    if (bkOtherCheckbox.checked && !bkOtherInput.value.trim()){
+      bkShowError(bkT('cw.errorSpecifyOther', 'Please specify the service(s) you need.'));
+      return;
+    }
+
+    const services = selected.map(cb => {
+      if (cb === bkOtherCheckbox && bkOtherInput.value.trim()) return 'Other: ' + bkOtherInput.value.trim();
+      return cb.value;
+    }).join(', ');
+
+    const date = bkDate.value;
+    const time = bkTime.value;
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)){
+      bkShowError(bkT('bk.pleaseChooseDate', 'Please choose a service date.'));
+      return;
+    }
+    if (bkIsDentistUnavailable(date)){
+      bkShowError(bkT('bk.dentistUnavailable', 'The dentist is unavailable on this date. Please choose another date.'));
+      return;
+    }
+    if (!time){
+      bkShowError(bkT('bk.pleaseChooseTime', 'Please choose a preferred time.'));
+      return;
+    }
+
+    /* ---- All validation passed — build payload and show the review panel ---- */
+    bkPendingPayload = {
+      payload: {
+        fullName: fullName, name: fullName,
+        age: age,
+        phone: phone, phoneNumber: phone,
+        email: email,
+        location: location,
+        service: services, serviceNeeded: services,
+        serviceDate: date, date: date, appointmentDate: date,
+        time: time, preferredTime: time, appointmentTime: time,
+        message: bkMessage.value.trim()
+      },
+      date: date,
+      time: time,
+      // human-readable copies for the review card
+      fullName: fullName,
+      age: age,
+      phone: phone,
+      email: email,
+      location: location,
+      services: services,
+      message: bkMessage.value.trim()
+    };
+
+    // Populate review card
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const [y, m, d] = date.split('-').map(Number);
+    const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const dateObj = new Date(y, m-1, d);
+    document.getElementById('bkReviewDate').textContent = dayNames[dateObj.getDay()] + ', ' + months[m-1] + ' ' + d + ', ' + y;
+    document.getElementById('bkReviewTime').textContent = apptFormatTime12(time);
+    document.getElementById('bkReviewName').textContent = fullName;
+    document.getElementById('bkReviewAge').textContent = age + ' years old';
+    document.getElementById('bkReviewPhone').textContent = phone;
+    const emailRow = document.getElementById('bkReviewEmailRow');
+    if (email){ document.getElementById('bkReviewEmail').textContent = email; emailRow.style.display = ''; }
+    else { emailRow.style.display = 'none'; }
+    document.getElementById('bkReviewLocation').textContent = location;
+    document.getElementById('bkReviewServices').textContent = services;
+    const msgRow = document.getElementById('bkReviewMessageRow');
+    if (bkPendingPayload.message){ document.getElementById('bkReviewMessage').textContent = bkPendingPayload.message; msgRow.style.display = ''; }
+    else { msgRow.style.display = 'none'; }
+
+    // Update confirm button label
+    bkReviewConfirmLabel.textContent = bkPhoneToCall
+      ? bkT('bk.submit', 'Submit & Call')
+      : bkT('bk.submitBook', 'Confirm & Submit');
+
+    // Transition: hide form, show review
+    bkShowError('');
+    bkForm.style.display = 'none';
+    bkTitle.style.display = 'none';
+    bkSub.style.display = 'none';
+    bkReview.style.display = 'flex';
+
+    // Scroll review into view smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ---------- Review: Go back to form ---------- */
+  bkReviewBack.addEventListener('click', function(){
+    bkPendingPayload = null;
+    bkReview.style.display = 'none';
+    bkForm.style.display = 'flex';
+    bkTitle.style.display = '';
+    bkSub.style.display = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ---------- Review: Confirm & Submit ---------- */
+  bkReviewConfirm.addEventListener('click', function(){
+    if (bkSubmitting || !bkPendingPayload) return;
+    bkShowError('');
+    bkDoSubmit(bkPendingPayload.payload, bkPendingPayload.date, bkPendingPayload.time);
+  });
+
+  bkOpenModal(null); // the form is the page: get it ready straight away
+});
+</script>
+</body>
+</html>
