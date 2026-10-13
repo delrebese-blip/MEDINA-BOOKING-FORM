@@ -619,11 +619,15 @@ langButtons.forEach(btn => btn.addEventListener('click', () => setLanguage(btn.g
 <script>
 /* ---------- Appointment Scheduling Engine ---------------------------------
    Real-time slots + double-booking prevention.
-   APPT_API_URL is the deployed Google Apps Script Web App that stores the
-   bookings. If it is left empty, the page runs in DEMO MODE: it simulates the
+   Bookings are stored in the clinic's Supabase database, the same one the Admin
+   website reads, through two server-side functions (clinic_public_slots and
+   clinic_public_book). Every booking appears in the admin's Patient requests,
+   and times you block in the admin Availability tab disappear from this form.
+   If APPT_API_URL is left empty, the page runs in DEMO MODE: it simulates the
    same API in this browser's localStorage so the full flow can be tested, but
    nothing is shared between visitors and nothing is validated server-side. */
-const APPT_API_URL = 'https://script.google.com/macros/s/AKfycbxPFjGcMsL9k2cG-uoiAPUjGP5mhfXw7uu_lSo2Q-UIqB5axSHIMLbT40xEYzv08mKm/exec'; 
+const APPT_API_URL = 'https://pxqjudgfzgcropecurhv.supabase.co'; // clinic Supabase project (same as the Admin website)
+const APPT_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWp1ZGdmemdjcm9wZWN1cmh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1Njg2NTcsImV4cCI6MjEwNzE0NDY1N30.jaw68ZeugERSkYEGcgBIirP2KpM69Qw9L6iXmvL1pew'; // public (anon) key: safe in a web page; the database rules protect the data
 const APPT_SLOT_START = '09:30';
 const APPT_SLOT_END = '18:00';
 const APPT_SLOT_STEP_MIN = 30;
@@ -723,12 +727,28 @@ function apptDemoTakenSlots(date){
   return apptDemoRead().filter(r => r.date === date && (r.status === 'booked' || r.status === 'blocked')).map(r => r.time);
 }
 
+/* ---- Calls one of the clinic's server-side functions in Supabase. Resolves {ok, json}. ---- */
+function apptSbRpc(fn, args, timeoutMs){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs || 12000);
+  return fetch(APPT_API_URL + '/rest/v1/rpc/' + fn, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': APPT_SB_KEY, 'Authorization': 'Bearer ' + APPT_SB_KEY },
+    body: JSON.stringify(args),
+    cache: 'no-store',
+    signal: controller.signal
+  }).then(r => r.json().catch(() => null).then(json => ({ ok: r.ok, json })))
+    .finally(() => clearTimeout(timer));
+}
+
 /* ---- Unified API: talks to the real backend, or the local demo one ---- */
 function apptApiGet(action, params){
   params = params || {};
   if (!APPT_DEMO_MODE){
-    const qs = new URLSearchParams(Object.assign({ action }, params)).toString();
-    return fetch(APPT_API_URL + '?' + qs, { cache:'no-store' }).then(r => r.json()).catch(err => { console.error('Appointment GET request failed:', err); return { success:false, error:'network_error' }; });
+    if (action !== 'getAvailableSlots') return Promise.resolve({ success:false, error:'unknown_action' });
+    return apptSbRpc('clinic_public_slots', { p_date: params.date })
+      .then(r => (r.ok && r.json) ? r.json : { success:false, error:'server_error' })
+      .catch(err => { console.error('Appointment GET request failed:', err); return { success:false, error:'network_error' }; });
   }
   // ----- demo mode -----
   return new Promise(resolve => {
@@ -769,24 +789,26 @@ function apptApiGet(action, params){
 function apptApiPost(action, body){
   body = Object.assign({ action }, body || {});
   if (!APPT_DEMO_MODE){
-    // Your backend parses the POST body with JSON.parse(e.postData.contents),
-    // so this must be sent as JSON (confirmed by the "action=cre... is not
-    // valid JSON" error your script returned when it was form-encoded).
+    if (action !== 'createBooking') return Promise.resolve({ success:false, error:'unknown_action' });
     // A 12s timeout keeps this from hanging indefinitely on a slow connection.
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 12000);
-    return fetch(APPT_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // keeps this a CORS-simple request; body is still JSON text
-      body: JSON.stringify(body),
-      signal: controller.signal
-    }).then(r => r.json())
-      .catch(err => {
-        const timedOut = err && err.name === 'AbortError';
-        console.error('Booking POST failed:', err);
-        return { success:false, error:'network_error', detail: timedOut ? 'The request took too long and timed out.' : String(err && err.message || err) };
-      })
-      .finally(() => clearTimeout(timer));
+    return apptSbRpc('clinic_public_book', {
+      p_full_name: body.fullName || '', p_age: String(body.age == null ? '' : body.age),
+      p_phone: body.phone || '', p_email: body.email || '', p_location: body.location || '',
+      p_service: body.service || '', p_date: body.date || null, p_time: body.time || '',
+      p_message: body.message || ''
+    }, 12000).then(r => {
+      if (r.ok && r.json){
+        const j = r.json;
+        // The page shows the reply's text to the patient, so pass the readable sentence through (not the code).
+        return (j.success === false && j.error !== 'slot_taken') ? { success:false, error: j.detail || j.error } : j;
+      }
+      console.error('Booking was rejected by the server:', r.json);
+      return { success:false, error:'The booking service is not available right now.' };
+    }).catch(err => {
+      const timedOut = err && err.name === 'AbortError';
+      console.error('Booking POST failed:', err);
+      return { success:false, error:'network_error', detail: timedOut ? 'The request took too long and timed out.' : String(err && err.message || err) };
+    });
   }
   // ----- demo mode -----
   return new Promise(resolve => {
