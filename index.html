@@ -109,6 +109,46 @@
   .booking-submit:disabled{opacity:.7; cursor:default;}
   .booking-submit svg{width:17px; height:17px;}
   .booking-thankyou{margin-top:22px; font-size:14.5px; color:var(--slate); line-height:1.7; text-align:center;}
+  /* Booking confirmation: ID card (mobile first) */
+  .bk-done{display:flex; flex-direction:column; align-items:center; gap:16px; width:100%;}
+  .bk-done-msg{max-width:420px; overflow-wrap:anywhere;}
+  .bk-idcard{width:100%; max-width:380px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:8px;
+    padding:16px 16px 14px; border-radius:16px; background:rgba(21,154,156,.08); border:1px dashed rgba(21,154,156,.6);}
+  .bk-id-label{font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--slate);}
+  .bk-id{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:clamp(24px,8vw,30px); font-weight:700; line-height:1.1;
+    letter-spacing:.14em; padding-left:.14em; color:var(--navy); background:none; user-select:all; -webkit-user-select:all; max-width:100%; overflow-wrap:anywhere;}
+  .bk-id-copy{display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:0 22px; border-radius:100px;
+    border:1.5px solid var(--teal); background:transparent; color:var(--teal); font-weight:700; font-size:14px; line-height:1; font-family:inherit; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:background-color .2s ease,color .2s ease,transform .15s ease;}
+  .bk-id-copy svg{width:16px; height:16px; flex:none;}
+  .bk-id-copy:active{transform:scale(.97);}
+  .bk-id-copy:focus-visible{outline:2px solid var(--teal); outline-offset:3px;}
+  .bk-id-copy.done{background:var(--teal); color:#fff;}
+  @media(hover:hover){.bk-id-copy:hover{background:rgba(21,154,156,.12);}.bk-id-copy.done:hover{background:var(--teal-dark);}}
+  .bk-id-hint{font-size:12.5px; line-height:1.55; color:var(--slate); max-width:300px;}
+  .bk-when{font-weight:600; color:var(--navy); overflow-wrap:anywhere;}
+  @media(max-width:480px){.bk-idcard{max-width:none;} .bk-id-copy{width:100%;}}
+  @media(prefers-reduced-motion:reduce){.bk-id-copy{transition:none;}}
+  html[data-theme="dark"] .bk-id,html[data-theme="dark"] .bk-when{color:#F3F7FB;}
+  html[data-theme="dark"] .bk-id-label,html[data-theme="dark"] .bk-id-hint{color:#9FB0C2;}
+  html[data-theme="dark"] .bk-idcard{background:rgba(21,154,156,.14); border-color:rgba(79,224,224,.5);}
+  html[data-theme="dark"] .bk-id-copy{color:#4fe0e0; border-color:#4fe0e0;}
+  html[data-theme="dark"] .bk-id-copy.done{background:var(--teal); color:#fff; border-color:var(--teal);}
+  /* ===== Mobile polish ===== */
+  .booking-modal-panel{max-height:88vh; max-height:calc(100dvh - 32px); -webkit-overflow-scrolling:touch; overscroll-behavior:contain;}
+  .booking-form input[type="text"], .booking-form input[type="email"], .booking-form input[type="tel"], .booking-form input[type="number"]{min-height:48px;}
+  @media (max-width:600px){
+    /* 16px stops iPhones from zooming the page when a field is tapped */
+    .booking-form input[type="text"], .booking-form input[type="email"], .booking-form input[type="tel"], .booking-form input[type="number"]{font-size:16px;}
+    .booking-modal{padding:max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));}
+    .booking-modal-panel{max-width:none; padding:24px 16px calc(20px + env(safe-area-inset-bottom));}
+    .booking-review-actions{flex-direction:column-reverse;}
+    .booking-review-actions .btn{width:100%; min-height:48px; flex:none;}
+    .booking-review-row{flex-wrap:wrap; gap:2px 12px;}
+    .booking-submit{min-height:50px;}
+  }
+  @media (max-width:360px){.booking-modal-panel{padding:22px 14px 18px;} .bk-id{letter-spacing:.1em;}}
+
   /* ===== BOOKING REVIEW PANEL ===== */
   .booking-review{display:none; flex-direction:column; gap:0; margin-top:22px;}
   .booking-review-header{
@@ -590,7 +630,10 @@ const translations = {
   "bk.pleaseTryAgain": {"en": "Please try again.", "fil": "Mangyaring subukan muli."},
   "bk.at": {"en": "at", "fil": "ng"},
   "bk.bookingIdLabel": {"en": "Booking ID:", "fil": "Booking ID:"},
-  "bk.referenceLabel": {"en": "Reference:", "fil": "Reference:"}
+  "bk.referenceLabel": {"en": "Reference:", "fil": "Reference:"},
+  "bk.copyId": {"en": "Copy ID", "fil": "Kopyahin ang ID"},
+  "bk.copied": {"en": "Copied!", "fil": "Nakopya!"},
+  "bk.idHint": {"en": "Please keep this ID. Show or tell it to the clinic when you visit or call.", "fil": "Pakitago po ang ID na ito. Ipakita o sabihin ito sa clinic kapag bumisita o tumawag kayo."}
 };
 
 let currentLang = 'en';
@@ -619,15 +662,11 @@ langButtons.forEach(btn => btn.addEventListener('click', () => setLanguage(btn.g
 <script>
 /* ---------- Appointment Scheduling Engine ---------------------------------
    Real-time slots + double-booking prevention.
-   Bookings are stored in the clinic's Supabase database, the same one the Admin
-   website reads, through two server-side functions (clinic_public_slots and
-   clinic_public_book). Every booking appears in the admin's Patient requests,
-   and times you block in the admin Availability tab disappear from this form.
-   If APPT_API_URL is left empty, the page runs in DEMO MODE: it simulates the
+   APPT_API_URL is the deployed Google Apps Script Web App that stores the
+   bookings. If it is left empty, the page runs in DEMO MODE: it simulates the
    same API in this browser's localStorage so the full flow can be tested, but
    nothing is shared between visitors and nothing is validated server-side. */
-const APPT_API_URL = 'https://pxqjudgfzgcropecurhv.supabase.co'; // clinic Supabase project (same as the Admin website)
-const APPT_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWp1ZGdmemdjcm9wZWN1cmh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1Njg2NTcsImV4cCI6MjEwNzE0NDY1N30.jaw68ZeugERSkYEGcgBIirP2KpM69Qw9L6iXmvL1pew'; // public (anon) key: safe in a web page; the database rules protect the data
+const APPT_API_URL = 'https://script.google.com/macros/s/AKfycbxPFjGcMsL9k2cG-uoiAPUjGP5mhfXw7uu_lSo2Q-UIqB5axSHIMLbT40xEYzv08mKm/exec'; 
 const APPT_SLOT_START = '09:30';
 const APPT_SLOT_END = '18:00';
 const APPT_SLOT_STEP_MIN = 30;
@@ -727,28 +766,78 @@ function apptDemoTakenSlots(date){
   return apptDemoRead().filter(r => r.date === date && (r.status === 'booked' || r.status === 'blocked')).map(r => r.time);
 }
 
-/* ---- Calls one of the clinic's server-side functions in Supabase. Resolves {ok, json}. ---- */
-function apptSbRpc(fn, args, timeoutMs){
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs || 12000);
-  return fetch(APPT_API_URL + '/rest/v1/rpc/' + fn, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'apikey': APPT_SB_KEY, 'Authorization': 'Bearer ' + APPT_SB_KEY },
-    body: JSON.stringify(args),
-    cache: 'no-store',
-    signal: controller.signal
-  }).then(r => r.json().catch(() => null).then(json => ({ ok: r.ok, json })))
-    .finally(() => clearTimeout(timer));
+/* ---- Supabase connection (same project as the clinic admin website) ----
+   The booking calendar, "createBooking" and webchat messages use the clinic's database functions.
+   Everything else on the page is unchanged. If a function is not available, the page falls back to the old backend. */
+const APPT_SB_URL = 'https://pxqjudgfzgcropecurhv.supabase.co';
+const APPT_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWp1ZGdmemdjcm9wZWN1cmh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1Njg2NTcsImV4cCI6MjEwNzE0NDY1N30.jaw68ZeugERSkYEGcgBIirP2KpM69Qw9L6iXmvL1pew'; // public anon key
+function apptSbHeaders(extra){
+  return Object.assign({ apikey: APPT_SB_KEY, Authorization: 'Bearer ' + APPT_SB_KEY, 'Content-Type': 'application/json' }, extra || {});
 }
+function apptSbRpc(name, args){
+  return fetch(APPT_SB_URL + '/rest/v1/rpc/' + name, { method:'POST', headers: apptSbHeaders(), body: JSON.stringify(args), cache:'no-store' })
+    .then(function(r){
+      return r.json().catch(function(){ return null; }).then(function(data){ return { ok: r.ok, status: r.status, data: data }; });
+    });
+}
+function apptSbUuid(){
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){ const r = Math.random()*16|0; return (c === 'x' ? r : (r&0x3|0x8)).toString(16); });
+}
+function apptSbSlots(date){
+  return apptSbRpc('clinic_get_available_slots', { p_date: date }).then(function(r){
+    if (!r.ok || !r.data || r.data.success === false){ console.error('Slots request failed:', r.status, r.data); return { success:false, error:'network_error' }; }
+    return r.data;
+  }).catch(function(err){ console.error('Slots request failed:', err); return { success:false, error:'network_error' }; });
+}
+/* Booking ID shown to the patient = first 8 characters of the booking's UUID, exactly what the clinic
+   dashboard shows as "Booking ID" (admin.js: bid()). Both sides derive it from the same database id. */
+const APPT_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function apptShortId(id){ return String(id == null ? '' : id).slice(0, 8); }
+function apptEsc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function apptSbCreate(b){
+  const ageNum = parseInt(b.age, 10);
+  const pid = apptSbUuid().toLowerCase();
+  return apptSbRpc('clinic_create_booking', {
+    p_id: pid,
+    p_full_name: String(b.fullName || b.name || '').trim(),
+    p_age: Number.isFinite(ageNum) ? ageNum : null,
+    p_phone: String(b.phone || b.phoneNumber || '').trim(),
+    p_email: String(b.email || '').trim() || null,
+    p_location: String(b.location || '').trim(),
+    p_service: String(b.service || b.serviceNeeded || '').trim(),
+    p_date: b.date || b.serviceDate || b.appointmentDate || null,
+    p_time: b.time || b.preferredTime || b.appointmentTime || null,
+    p_message: String(b.message || '').trim() || null
+  }).then(function(r){
+    if (r.ok && r.data && typeof r.data === 'object'){
+      const d = r.data;
+      // Prefer the id the database confirms; otherwise the id we sent (the database stores p_id as the booking id).
+      const echoed = [d.id, d.bookingId, d.booking_id, d.BookingID].filter(function(v){ return typeof v === 'string' && APPT_UUID_RE.test(v); })[0];
+      if (d.success === true || (echoed && d.success !== false && !d.error)){
+        return Object.assign({}, d, { success:true, bookingId: apptShortId(echoed ? echoed.toLowerCase() : pid) });
+      }
+      return d;
+    }
+    // function missing / not allowed: nothing was saved, so the old backend can take over
+    return { success:false, error:'sb_unavailable', detail:(r.data && r.data.message) || ('Error ' + r.status) };
+  }).catch(function(err){ return { success:false, error:'network_error', detail:String(err && err.message || err) }; });
+}
+
+let apptSbSkip = false;
 
 /* ---- Unified API: talks to the real backend, or the local demo one ---- */
 function apptApiGet(action, params){
   params = params || {};
+  if (action === 'getAvailableSlots' && params.date && !apptSbSkip){
+    return apptSbSlots(params.date).then(function(r){
+      if (r && r.success !== false) return r;
+      apptSbSkip = true; try { return apptApiGet(action, params); } finally { apptSbSkip = false; }
+    });
+  }
   if (!APPT_DEMO_MODE){
-    if (action !== 'getAvailableSlots') return Promise.resolve({ success:false, error:'unknown_action' });
-    return apptSbRpc('clinic_public_slots', { p_date: params.date })
-      .then(r => (r.ok && r.json) ? r.json : { success:false, error:'server_error' })
-      .catch(err => { console.error('Appointment GET request failed:', err); return { success:false, error:'network_error' }; });
+    const qs = new URLSearchParams(Object.assign({ action }, params)).toString();
+    return fetch(APPT_API_URL + '?' + qs, { cache:'no-store' }).then(r => r.json()).catch(err => { console.error('Appointment GET request failed:', err); return { success:false, error:'network_error' }; });
   }
   // ----- demo mode -----
   return new Promise(resolve => {
@@ -788,27 +877,31 @@ function apptApiGet(action, params){
 }
 function apptApiPost(action, body){
   body = Object.assign({ action }, body || {});
-  if (!APPT_DEMO_MODE){
-    if (action !== 'createBooking') return Promise.resolve({ success:false, error:'unknown_action' });
-    // A 12s timeout keeps this from hanging indefinitely on a slow connection.
-    return apptSbRpc('clinic_public_book', {
-      p_full_name: body.fullName || '', p_age: String(body.age == null ? '' : body.age),
-      p_phone: body.phone || '', p_email: body.email || '', p_location: body.location || '',
-      p_service: body.service || '', p_date: body.date || null, p_time: body.time || '',
-      p_message: body.message || ''
-    }, 12000).then(r => {
-      if (r.ok && r.json){
-        const j = r.json;
-        // The page shows the reply's text to the patient, so pass the readable sentence through (not the code).
-        return (j.success === false && j.error !== 'slot_taken') ? { success:false, error: j.detail || j.error } : j;
-      }
-      console.error('Booking was rejected by the server:', r.json);
-      return { success:false, error:'The booking service is not available right now.' };
-    }).catch(err => {
-      const timedOut = err && err.name === 'AbortError';
-      console.error('Booking POST failed:', err);
-      return { success:false, error:'network_error', detail: timedOut ? 'The request took too long and timed out.' : String(err && err.message || err) };
+  if (action === 'createBooking' && !apptSbSkip && (body.date || body.serviceDate || body.appointmentDate)){
+    return apptSbCreate(body).then(function(r){
+      if (!r || r.error !== 'sb_unavailable') return r;
+      apptSbSkip = true; try { return apptApiPost(action, body); } finally { apptSbSkip = false; }
     });
+  }
+  if (!APPT_DEMO_MODE){
+    // Your backend parses the POST body with JSON.parse(e.postData.contents),
+    // so this must be sent as JSON (confirmed by the "action=cre... is not
+    // valid JSON" error your script returned when it was form-encoded).
+    // A 12s timeout keeps this from hanging indefinitely on a slow connection.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    return fetch(APPT_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // keeps this a CORS-simple request; body is still JSON text
+      body: JSON.stringify(body),
+      signal: controller.signal
+    }).then(r => r.json())
+      .catch(err => {
+        const timedOut = err && err.name === 'AbortError';
+        console.error('Booking POST failed:', err);
+        return { success:false, error:'network_error', detail: timedOut ? 'The request took too long and timed out.' : String(err && err.message || err) };
+      })
+      .finally(() => clearTimeout(timer));
   }
   // ----- demo mode -----
   return new Promise(resolve => {
@@ -882,6 +975,33 @@ document.addEventListener('DOMContentLoaded', function(){
   const bkSub = document.getElementById('bookingModalSub');
   const bkTitle = document.getElementById('bookingModalTitle');
   const bkThankYou = document.getElementById('bookingThankYou');
+  bkThankYou.addEventListener('click', function(e){
+    const btn = e.target.closest ? e.target.closest('[data-copy-id]') : null;
+    if (!btn) return;
+    const text = btn.getAttribute('data-copy-id') || '';
+    const label = btn.querySelector('span');
+    function ok(){
+      if (!label) return;
+      const old = label.getAttribute('data-old') || label.textContent;
+      label.setAttribute('data-old', old);
+      label.textContent = bkT('bk.copied', 'Copied!');
+      btn.classList.add('done');
+      clearTimeout(btn._t);
+      btn._t = setTimeout(function(){ label.textContent = old; btn.classList.remove('done'); }, 1800);
+    }
+    function fallback(){
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+        document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+        const done = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (done) ok();
+      }catch(err){}
+    }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(ok, fallback); else fallback();
+  });
   const bkReview = document.getElementById('bookingReview');
   const bkReviewBack = document.getElementById('bkReviewBack');
   const bkReviewConfirm = document.getElementById('bkReviewConfirm');
@@ -1372,9 +1492,17 @@ document.addEventListener('DOMContentLoaded', function(){
         window.location.href = bkPhoneToCall;
       } else {
         bkSubmitting = false;
-        bkThankYou.innerHTML = bkT('cw.thankYou', 'Thank you! Your request has been submitted successfully. We will contact you shortly.') +
-          (res.bookingId ? '<br><br><strong>' + bkT('bk.bookingIdLabel', 'Booking ID:') + ' ' + res.bookingId + '</strong><br>' : '<br><br>') +
-          date + ' ' + bkT('bk.at', 'at') + ' ' + apptFormatTime12(time);
+        const bkId = res.bookingId ? apptEsc(res.bookingId) : '';
+        bkThankYou.innerHTML = '<div class="bk-done">' +
+          '<div class="bk-done-msg">' + apptEsc(bkT('cw.thankYou', 'Thank you! Your request has been submitted successfully. We will contact you shortly.')) + '</div>' +
+          (bkId ? '<div class="bk-idcard" role="group" aria-label="' + apptEsc(bkT('bk.bookingIdLabel', 'Booking ID:').replace(/:\s*$/, '')) + '">' +
+            '<span class="bk-id-label">' + apptEsc(bkT('bk.bookingIdLabel', 'Booking ID:').replace(/:\s*$/, '')) + '</span>' +
+            '<code class="bk-id">' + bkId + '</code>' +
+            '<button type="button" class="bk-id-copy" data-copy-id="' + bkId + '">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+              '<span>' + apptEsc(bkT('bk.copyId', 'Copy ID')) + '</span></button>' +
+            '<span class="bk-id-hint">' + apptEsc(bkT('bk.idHint', 'Please keep this ID. Show or tell it to the clinic when you visit or call.')) + '</span></div>' : '') +
+          '<div class="bk-when">' + apptEsc(date) + ' ' + apptEsc(bkT('bk.at', 'at')) + ' ' + apptEsc(apptFormatTime12(time)) + '</div></div>';
         bkReview.style.display = 'none';
         bkTitle.style.display = 'none';
         bkSub.style.display = 'none';
